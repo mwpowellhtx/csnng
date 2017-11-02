@@ -102,7 +102,6 @@ namespace Nanomsg2.Sharp.Messaging
             VerifyCanPrependString(s, m => m.Body);
         }
 
-
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
