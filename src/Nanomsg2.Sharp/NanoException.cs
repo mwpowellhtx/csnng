@@ -5,6 +5,7 @@ namespace Nanomsg2.Sharp
 {
     using static Imports;
     using static Marshal;
+    using static ErrorCode;
 
     public class NanoException : Exception
     {
@@ -17,12 +18,21 @@ namespace Nanomsg2.Sharp
             return PtrToStringAnsi(sPtr);
         }
 
+        public bool WasSystemError { get; }
+
+        public bool WasTransportError { get; }
+
+        public int RawNumber { get; }
+
         public int ErrorNumber { get; }
 
         internal NanoException(int errnum)
-            : base(GetStringError(errnum))
+            : base(GetStringError(errnum & ~((int) SystemError | (int) TransportError)))
         {
-            ErrorNumber = errnum;
+            WasSystemError = (errnum & (int) SystemError) == (int) SystemError;
+            WasTransportError = (errnum & (int) TransportError) == (int) TransportError;
+            RawNumber = errnum;
+            ErrorNumber = errnum & ~((int) SystemError | (int) TransportError);
         }
     }
 }
