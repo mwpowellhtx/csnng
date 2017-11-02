@@ -1,0 +1,7 @@
+.vs/
+bin/
+obj/
+build/
+repos/
+packages/
+_ReSharper.Caches/
