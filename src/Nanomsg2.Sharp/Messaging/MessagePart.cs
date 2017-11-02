@@ -39,6 +39,11 @@ namespace Nanomsg2.Sharp.Messaging
 
         protected abstract uint TrimLeft();
 
+        public void TrimLeft(out uint result)
+        {
+            result = TrimLeft();
+        }
+
         public void TrimLeft(int count, out IEnumerable<uint> result)
         {
             // TODO: TBD: ditto TrimRight
@@ -51,6 +56,11 @@ namespace Nanomsg2.Sharp.Messaging
         }
 
         protected abstract uint TrimRight();
+
+        public void TrimRight(out uint result)
+        {
+            result = TrimRight();
+        }
 
         public void TrimRight(int count, out IEnumerable<uint> result)
         {

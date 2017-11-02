@@ -219,12 +219,42 @@ namespace Nanomsg2.Sharp.Messaging
             });
         }
 
+        protected static void VerifyTrimLeftUInt32<TPart>(uint expected, Func<IMessage, TPart> getPart)
+            where TPart : class, ICanAppend<uint>, ICanTrimLeft<uint>
+        {
+            Assert.NotNull(getPart);
+            VerifyMessage(m =>
+            {
+                var part = getPart(m);
+                Assert.NotNull(part);
+                part.Append(expected);
+                uint actual;
+                part.TrimLeft(out actual);
+                Assert.Equal(expected, actual);
+            });
+        }
+
+        protected static void VerifyTrimRightUInt32<TPart>(uint expected, Func<IMessage, TPart> getPart)
+            where TPart : class, ICanAppend<uint>, ICanTrimRight<uint>
+        {
+            Assert.NotNull(getPart);
+            VerifyMessage(m =>
+            {
+                var part = getPart(m);
+                Assert.NotNull(part);
+                part.Append(expected);
+                uint actual;
+                part.TrimRight(out actual);
+                Assert.Equal(expected, actual);
+            });
+        }
+
         protected static void VerifyTrimLeftUInt32<TPart>(int count, Func<IMessage, TPart> getPart)
             where TPart : class, ICanAppend<uint>, ICanTrimLeft<int, IEnumerable<uint>>
         {
+            Assert.NotNull(getPart);
             VerifyMessage(m =>
             {
-                Assert.NotNull(getPart);
                 var part = getPart(m);
                 Assert.NotNull(part);
                 // TODO: TBD: this is informing the presently naive implementation
@@ -346,20 +376,24 @@ namespace Nanomsg2.Sharp.Messaging
 
         public abstract void ThatPrependStringImpl(string s);
 
-        public abstract void VerifyThatTrimLeftUInt32Impl(int count);
+        public abstract void ThatTrimLeftOneUInt32Impl(uint value);
 
-        public abstract void VerifyThatTrimRightUInt32Impl(int count);
+        public abstract void ThatTrimRightOneUInt32Impl(uint value);
 
+        public abstract void ThatTrimLeftUInt32Impl(int count);
+
+        public abstract void ThatTrimRightUInt32Impl(int count);
+        
         //public abstract void VerifyThatTrimLeftStringImpl(ulong sz);
 
         //public abstract void VerifyThatTrimRightStringImpl(ulong sz);
 
-        public abstract void VerifyThatTrimLeftBytesImpl(ulong sz);
+        public abstract void ThatTrimLeftBytesImpl(ulong sz);
 
-        public abstract void VerifyThatTrimRightBytesImpl(ulong sz);
+        public abstract void ThatTrimRightBytesImpl(ulong sz);
 
-        public abstract void VerifyThatTrimLeftStringImpl(string s);
+        public abstract void ThatTrimLeftStringImpl(string s);
 
-        public abstract void VerifyThatTrimRightStringImpl(string s);
+        public abstract void ThatTrimRightStringImpl(string s);
     }
 }

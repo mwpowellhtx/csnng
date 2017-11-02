@@ -102,11 +102,32 @@ namespace Nanomsg2.Sharp.Messaging
             VerifyCanPrependString(s, m => m.Body);
         }
 
+
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(3)]
-        public override void VerifyThatTrimLeftUInt32Impl(int count)
+        [InlineData(0xfaded)]
+        public override void ThatTrimLeftOneUInt32Impl(uint value)
+        {
+            VerifyTrimLeftUInt32(value, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(0xfaded)]
+        public override void ThatTrimRightOneUInt32Impl(uint value)
+        {
+            VerifyTrimRightUInt32(value, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public override void ThatTrimLeftUInt32Impl(int count)
         {
             VerifyTrimLeftUInt32(count, m => m.Body);
         }
@@ -115,7 +136,7 @@ namespace Nanomsg2.Sharp.Messaging
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(3)]
-        public override void VerifyThatTrimRightUInt32Impl(int count)
+        public override void ThatTrimRightUInt32Impl(int count)
         {
             VerifyTrimRightUInt32(count, m => m.Body);
         }
@@ -124,7 +145,7 @@ namespace Nanomsg2.Sharp.Messaging
         [InlineData(0x10)]
         [InlineData(0x100)]
         [InlineData(0x1000)]
-        public override void VerifyThatTrimLeftBytesImpl(ulong sz)
+        public override void ThatTrimLeftBytesImpl(ulong sz)
         {
             VerifyTrimLeftBytes(sz, m => m.Body);
         }
@@ -133,7 +154,7 @@ namespace Nanomsg2.Sharp.Messaging
         [InlineData(0x10)]
         [InlineData(0x100)]
         [InlineData(0x1000)]
-        public override void VerifyThatTrimRightBytesImpl(ulong sz)
+        public override void ThatTrimRightBytesImpl(ulong sz)
         {
             VerifyTrimRightBytes(sz, m => m.Body);
         }
@@ -141,7 +162,7 @@ namespace Nanomsg2.Sharp.Messaging
         [Theory]
         [InlineData(this_is_a_test)]
         [InlineData(this_is_your_life)]
-        public override void VerifyThatTrimLeftStringImpl(string s)
+        public override void ThatTrimLeftStringImpl(string s)
         {
             VerifyTrimLeftString(s, m => m.Body);
         }
@@ -149,7 +170,7 @@ namespace Nanomsg2.Sharp.Messaging
         [Theory]
         [InlineData(this_is_a_test)]
         [InlineData(this_is_your_life)]
-        public override void VerifyThatTrimRightStringImpl(string s)
+        public override void ThatTrimRightStringImpl(string s)
         {
             VerifyTrimRightString(s, m => m.Body);
         }
