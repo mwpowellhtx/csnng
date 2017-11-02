@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 namespace Nanomsg2.Sharp.Messaging
 {
     using static Math;
+    using static Convert;
     using static Imports;
     using static UnmanagedType;
 
@@ -56,7 +57,7 @@ namespace Nanomsg2.Sharp.Messaging
             ProtectedParent.InvokeHavingNoResult(__Clear);
         }
 
-        public override byte[] Get()
+        public override IEnumerable<byte> Get()
         {
             var data = ProtectedParent.InvokeWithResult(__GetBytes);
             return DecodeGetResult(data);
@@ -72,18 +73,18 @@ namespace Nanomsg2.Sharp.Messaging
             ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __PrependUInt32(ptr, value));
         }
 
-        public override void TrimLeft(out uint value)
+        protected override uint TrimLeft()
         {
-            var temp = default(uint);
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimLeftUInt32(ptr, ref temp));
-            value = temp;
+            var x = default(uint);
+            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimLeftUInt32(ptr, ref x));
+            return x;
         }
 
-        public override void TrimRight(out uint value)
+        protected override uint TrimRight()
         {
-            var temp = default(uint);
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimRightUInt32(ptr, ref temp));
-            value = temp;
+            var x = default(uint);
+            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimRightUInt32(ptr, ref x));
+            return x;
         }
 
         public override void Append(IEnumerable<byte> buffer, ulong sz)
@@ -126,14 +127,37 @@ namespace Nanomsg2.Sharp.Messaging
             Prepend(buffer);
         }
 
-        public override void TrimLeft(ulong sz)
+        public override void TrimLeft(ulong sz, out IEnumerable<byte> result)
         {
+            // TODO: TBD: we will start by assuming there is sufficient size in the buffer.
+            // TODO: TBD: I realize that is a naive look but will specialize the use cases a bit later
+            var local = Get();
+            result = local.Take((int) sz).ToArray();
             ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimBytesLeft(ptr, sz));
         }
 
-        public override void TrimRight(ulong sz)
+        public override void TrimRight(ulong sz, out IEnumerable<byte> result)
         {
+            // TODO: TBD: ditto TrimLeft re: size assumptions
+            var local = Get().ToArray();
+            result = local.Skip(local.Length - (int) sz).ToArray();
             ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimBytesRight(ptr, sz));
+        }
+
+        public override void TrimLeft(int length, out string result)
+        {
+            // TODO: TBD: this is a somewhat naive perspective. there may be better ways of doing this...
+            IEnumerable<byte> bytes;
+            TrimLeft((ulong) length, out bytes);
+            result = new string(bytes.Select(ToChar).ToArray());
+        }
+
+        public override void TrimRight(int length, out string result)
+        {
+            // TODO: TBD: ditto Trimleft...
+            IEnumerable<byte> bytes;
+            TrimRight((ulong)length, out bytes);
+            result = new string(bytes.Select(ToChar).ToArray());
         }
     }
 }

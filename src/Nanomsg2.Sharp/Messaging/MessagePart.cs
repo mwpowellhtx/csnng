@@ -22,7 +22,7 @@ namespace Nanomsg2.Sharp.Messaging
 
         public abstract void Clear();
 
-        protected virtual byte[] DecodeGetResult(IntPtr data)
+        protected virtual IEnumerable<byte> DecodeGetResult(IntPtr data)
         {
             /* There is no way to conveniently Marshal a return variable,
              *  so we received it as an IntPtr and must now decode it. */
@@ -32,12 +32,38 @@ namespace Nanomsg2.Sharp.Messaging
             return result;
         }
 
-        public abstract byte[] Get();
+        public abstract IEnumerable<byte> Get();
 
         public abstract void Append(uint value);
         public abstract void Prepend(uint value);
-        public abstract void TrimLeft(out uint value);
-        public abstract void TrimRight(out uint value);
+
+        protected abstract uint TrimLeft();
+
+        public void TrimLeft(int count, out IEnumerable<uint> result)
+        {
+            // TODO: TBD: ditto TrimRight
+            var local = new List<uint>();
+            while (local.Count < count)
+            {
+                local.Add(TrimLeft());
+            }
+            result = local.ToArray();
+        }
+
+        protected abstract uint TrimRight();
+
+        public void TrimRight(int count, out IEnumerable<uint> result)
+        {
+            /* TODO: TBD: we could get highly functional here into a "general" case, and maybe
+             * we will, but for now I do not see the cost/benefit being worth it without
+             * needlessly complicating things. */
+            var local = new List<uint>();
+            while (local.Count < count)
+            {
+                local.Insert(0, TrimRight());
+            }
+            result = local.ToArray();
+        }
 
         public virtual void Append(IEnumerable<byte> buffer, ulong sz)
         {
@@ -69,12 +95,22 @@ namespace Nanomsg2.Sharp.Messaging
             throw new NotImplementedException();
         }
 
-        public virtual void TrimLeft(ulong sz)
+        public virtual void TrimLeft(ulong sz, out IEnumerable<byte> result)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void TrimRight(ulong sz)
+        public virtual void TrimRight(ulong sz, out IEnumerable<byte> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void TrimLeft(int length, out string result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void TrimRight(int length, out string result)
         {
             throw new NotImplementedException();
         }

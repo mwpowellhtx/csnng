@@ -13,9 +13,13 @@ namespace Nanomsg2.Sharp.Messaging
             , ICanPrepend<string>
             , ICanPrepend<IEnumerable<byte>>
             , ICanPrependWithSize<IEnumerable<byte>>
-            , ICanTrimLeft<uint>, ICanTrimRight<uint>
-            , ICanTrimBytesLeft<ulong>, ICanTrimBytesRight<ulong>
-            , ICanGet<byte[]>
+            , ICanTrimLeft<int, IEnumerable<uint>>
+            , ICanTrimLeft<ulong, IEnumerable<byte>>
+            , ICanTrimLeft<int, string>
+            , ICanTrimRight<int, IEnumerable<uint>>
+            , ICanTrimRight<ulong, IEnumerable<byte>>
+            , ICanTrimRight<int, string>
+            , ICanGet<IEnumerable<byte>>
     {
         IMessage Parent { get; }
     }

@@ -1,16 +1,13 @@
+using System.Collections.Generic;
+
 namespace Nanomsg2.Sharp.Messaging
 {
     public interface ICanTrimRight
     {
     }
 
-    public interface ICanTrimRight<T> : ICanTrimRight
+    public interface ICanTrimRight<in TCount, TResult> : ICanTrimRight
     {
-        void TrimRight(out T value);
-    }
-
-    public interface ICanTrimBytesRight<in T> : ICanTrimRight
-    {
-        void TrimRight(T sz);
+        void TrimRight(TCount count, out TResult result);
     }
 }

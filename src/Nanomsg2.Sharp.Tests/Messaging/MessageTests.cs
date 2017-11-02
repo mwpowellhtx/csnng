@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Nanomsg2.Sharp.Messaging
+﻿namespace Nanomsg2.Sharp.Messaging
 {
     using Xunit;
 

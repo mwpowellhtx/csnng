@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 
 namespace Nanomsg2.Sharp.Messaging
 {
@@ -50,86 +50,108 @@ namespace Nanomsg2.Sharp.Messaging
         [InlineData(0x10)]
         [InlineData(0x100)]
         [InlineData(0x1000)]
-        public override void VerifyThatAppendBytesNotImplemented(ulong sz)
+        public override void ThatAppendBytesImpl(ulong sz)
         {
-            VerifyMessage(m =>
-            {
-                Assert.Throws<NotImplementedException>(() => m.Body.Append(new byte[sz], sz));
-            });
-        }
-
-
-        [Fact]
-        public override void VerifyThatAppendBytesNoSizeNotImplemented()
-        {
-            VerifyMessage(m =>
-            {
-                Assert.Throws<NotImplementedException>(() => m.Body.Append(new byte[] { }));
-            });
-        }
-
-        [Fact]
-        public override void VerifyThatAppendStringNotImplemented()
-        {
-            VerifyMessage(m =>
-            {
-                Assert.Throws<NotImplementedException>(() => m.Body.Append(string.Empty));
-            });
+            var bytes = Enumerable.Range(0, (int) sz).Select(x => (byte) x).ToArray();
+            VerifyCanAppendBytes(sz, bytes, m => m.Body);
         }
 
         [Theory]
         [InlineData(0x10)]
         [InlineData(0x100)]
         [InlineData(0x1000)]
-        public override void VerifyThatPrependBytesNotImplemented(ulong sz)
+        public override void ThatAppendBytesNoSizeImpl(ulong sz)
         {
-            VerifyMessage(m =>
-            {
-                Assert.Throws<NotImplementedException>(() => m.Body.Prepend(new byte[sz], sz));
-            });
-        }
-
-
-        [Fact]
-        public override void VerifyThatPrependBytesNoSizeNotImplemented()
-        {
-            VerifyMessage(m =>
-            {
-                Assert.Throws<NotImplementedException>(() => m.Body.Prepend(new byte[] { }));
-            });
-        }
-
-        [Fact]
-        public override void VerifyThatPrependStringNotImplemented()
-        {
-            VerifyMessage(m =>
-            {
-                Assert.Throws<NotImplementedException>(() => m.Body.Prepend(string.Empty));
-            });
+            var bytes = Enumerable.Range(0, (int) sz).Select(x => (byte) x).ToArray();
+            VerifyCanAppendBytes(bytes, m => m.Body);
         }
 
         [Theory]
         [InlineData(0x10)]
         [InlineData(0x100)]
         [InlineData(0x1000)]
-        public override void VerifyThatTrimLeftNotImplemented(ulong sz)
+        public override void ThatPrependBytesImpl(ulong sz)
         {
-            VerifyMessage(m =>
-            {
-                Assert.Throws<NotImplementedException>(() => m.Body.TrimLeft(sz));
-            });
+            var bytes = Enumerable.Range(0, (int) sz).Select(x => (byte) x).ToArray();
+            VerifyCanPrependBytes(sz, bytes, m => m.Body);
         }
 
         [Theory]
         [InlineData(0x10)]
         [InlineData(0x100)]
         [InlineData(0x1000)]
-        public override void VerifyThatTrimRightNotImplemented(ulong sz)
+        public override void ThatPrependBytesNoSizeImpl(ulong sz)
         {
-            VerifyMessage(m =>
-            {
-                Assert.Throws<NotImplementedException>(() => m.Body.TrimRight(sz));
-            });
+            var bytes = Enumerable.Range(0, (int) sz).Select(x => (byte) x).ToArray();
+            VerifyCanPrependBytes(bytes, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(this_is_a_test)]
+        [InlineData(this_is_your_life)]
+        public override void ThatAppendStringImpl(string s)
+        {
+            VerifyCanAppendString(s, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(this_is_a_test)]
+        [InlineData(this_is_your_life)]
+        public override void ThatPrependStringImpl(string s)
+        {
+            VerifyCanPrependString(s, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public override void VerifyThatTrimLeftUInt32Impl(int count)
+        {
+            VerifyTrimLeftUInt32(count, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public override void VerifyThatTrimRightUInt32Impl(int count)
+        {
+            VerifyTrimRightUInt32(count, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(0x10)]
+        [InlineData(0x100)]
+        [InlineData(0x1000)]
+        public override void VerifyThatTrimLeftBytesImpl(ulong sz)
+        {
+            VerifyTrimLeftBytes(sz, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(0x10)]
+        [InlineData(0x100)]
+        [InlineData(0x1000)]
+        public override void VerifyThatTrimRightBytesImpl(ulong sz)
+        {
+            VerifyTrimRightBytes(sz, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(this_is_a_test)]
+        [InlineData(this_is_your_life)]
+        public override void VerifyThatTrimLeftStringImpl(string s)
+        {
+            VerifyTrimLeftString(s, m => m.Body);
+        }
+
+        [Theory]
+        [InlineData(this_is_a_test)]
+        [InlineData(this_is_your_life)]
+        public override void VerifyThatTrimRightStringImpl(string s)
+        {
+            VerifyTrimRightString(s, m => m.Body);
         }
     }
 }

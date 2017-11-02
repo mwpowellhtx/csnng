@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Nanomsg2.Sharp.Messaging
@@ -8,10 +7,16 @@ namespace Nanomsg2.Sharp.Messaging
 
     public abstract class MessageTestBase
     {
+        // ReSharper disable once InconsistentNaming
         protected const ulong sizeof_uint = sizeof(uint);
 
+        // ReSharper disable once InconsistentNaming
         protected const string this_is_a_test = "this is a test";
 
+        // ReSharper disable once InconsistentNaming
+        protected const string this_is_your_life = "this is your life";
+
+        // ReSharper disable once InconsistentNaming
         protected static readonly byte[] sample_data;
 
         static MessageTestBase()

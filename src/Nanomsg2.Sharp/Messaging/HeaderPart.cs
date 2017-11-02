@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Nanomsg2.Sharp.Messaging
@@ -41,7 +42,7 @@ namespace Nanomsg2.Sharp.Messaging
             ProtectedParent.InvokeHavingNoResult(__Clear);
         }
 
-        public override byte[] Get()
+        public override IEnumerable<byte> Get()
         {
             var data = ProtectedParent.InvokeWithResult(__GetBytes);
             return DecodeGetResult(data);
@@ -57,18 +58,18 @@ namespace Nanomsg2.Sharp.Messaging
             ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __PrependUInt32(ptr, value));
         }
 
-        public override void TrimLeft(out uint value)
+        protected override uint TrimLeft()
         {
-            var temp = default(uint);
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimLeftUInt32(ptr, ref temp));
-            value = temp;
+            var x = default(uint);
+            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimLeftUInt32(ptr, ref x));
+            return x;
         }
 
-        public override void TrimRight(out uint value)
+        protected override uint TrimRight()
         {
-            var temp = default(uint);
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimRightUInt32(ptr, ref temp));
-            value = temp;
+            var x = default(uint);
+            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimRightUInt32(ptr, ref x));
+            return x;
         }
     }
 }
