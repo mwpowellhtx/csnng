@@ -61,6 +61,7 @@
     <Compile Include="Messaging\IMessagePart.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\MessagePart.cs" />
+    <Compile Include="NanoException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -42,13 +42,11 @@ namespace Nanomsg2.Sharp.Messaging
         internal void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller)
         {
             Allocate(ref _msgPtr);
-            var result = caller(_msgPtr);
-            if (result == 0) return;
+            var errnum = caller(_msgPtr);
+            if (errnum == 0) return;
             // TODO: TBD: do something with the result...
             // TODO: TBD: introduce an appropriately named exception
-            var ex = new Exception();
-            ex.Data.Add("retval", result);
-            throw ex;
+            throw new NanoException(errnum);
         }
 
         internal TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<IntPtr, TResult> caller)
