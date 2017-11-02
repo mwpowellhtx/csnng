@@ -5,3 +5,4 @@ build/
 repos/
 packages/
 _ReSharper.Caches/
+*.DotSettings
