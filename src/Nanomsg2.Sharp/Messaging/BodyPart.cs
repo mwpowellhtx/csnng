@@ -13,6 +13,7 @@ namespace Nanomsg2.Sharp.Messaging
     public class BodyPart : MessagePart, IBodyPart
     {
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_len", CallingConvention = Cdecl)]
+        [return: MarshalAs(U8)]
         private static extern ulong __GetLength(IntPtr msgPtr);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_body", CallingConvention = Cdecl)]
@@ -22,27 +23,35 @@ namespace Nanomsg2.Sharp.Messaging
         private static extern void __Clear(IntPtr msgPtr);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_append_u32", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __AppendUInt32(IntPtr msgPtr, [MarshalAs(U4)] uint value);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_insert_u32", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __PrependUInt32(IntPtr msgPtr, [MarshalAs(U4)] uint value);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_trim_u32", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __TrimLeftUInt32(IntPtr msgPtr, [MarshalAs(U4)] ref uint value);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_chop_u32", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __TrimRightUInt32(IntPtr msgPtr, [MarshalAs(U4)] ref uint value);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_append", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __AppendByteBuffer(IntPtr msgPtr, [MarshalAs(LPArray)] byte[] buffer, [MarshalAs(U8)] ulong sz);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_append", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __PrependByteBuffer(IntPtr msgPtr, [MarshalAs(LPArray)] byte[] buffer, [MarshalAs(U8)]  ulong sz);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_trim", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __TrimBytesLeft(IntPtr msgPtr, [MarshalAs(U8)] ulong sz);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_chop", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __TrimBytesRight(IntPtr msgPtr, [MarshalAs(U8)] ulong sz);
 
         internal BodyPart(IMessage message)

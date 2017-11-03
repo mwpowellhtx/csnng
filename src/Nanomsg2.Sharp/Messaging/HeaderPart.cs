@@ -10,6 +10,7 @@ namespace Nanomsg2.Sharp.Messaging
     public class HeaderPart : MessagePart, IHeaderPart
     {
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_header_len", CallingConvention = Cdecl)]
+        [return: MarshalAs(I8)]
         private static extern ulong __GetLength(IntPtr msgPtr);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_header", CallingConvention = Cdecl)]
@@ -19,15 +20,19 @@ namespace Nanomsg2.Sharp.Messaging
         private static extern void __Clear(IntPtr msgPtr);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_header_append_u32", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __AppendUInt32(IntPtr msgPtr, [MarshalAs(U4)] uint value);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_header_insert_u32", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __PrependUInt32(IntPtr msgPtr, [MarshalAs(U4)] uint value);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_header_trim_u32", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __TrimLeftUInt32(IntPtr msgPtr, [MarshalAs(U4)] ref uint value);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_header_chop_u32", CallingConvention = Cdecl)]
+        [return: MarshalAs(I4)]
         private static extern int __TrimRightUInt32(IntPtr msgPtr, [MarshalAs(U4)] ref uint value);
 
         internal HeaderPart(IMessage message)
