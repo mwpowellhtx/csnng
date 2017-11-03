@@ -4,8 +4,17 @@ namespace Nanomsg2.Sharp
 {
     public class Invoker : Disposable, IInvoker
     {
+        protected Invoker DefaultInvoker { get; }
+
+        protected Invoker()
+        {
+            DefaultInvoker = this;
+        }
+
         // TODO: TBD: probably belongs in another class... along the same lines as "invocation" in C++
         protected internal delegate void InvocationHavingNoResult<in T>(T ptr);
+
+        protected internal delegate TResult InvocationWithResultDelegate<out TResult>();
 
         protected internal delegate TResult InvocationWithResultDelegate<in T, out TResult>(T ptr);
 
@@ -29,6 +38,16 @@ namespace Nanomsg2.Sharp
         protected internal virtual void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller, IntPtr ptr)
         {
             var errnum = caller(ptr);
+            if (errnum == 0) return;
+            // TODO: TBD: do something with the result...
+            // TODO: TBD: introduce an appropriately named exception
+            throw new NanoException(errnum);
+        }
+
+        // TODO: TBD: truly, this one may be the better of all the forms: leaving ALL of the impl details to the caller...
+        protected internal virtual void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<int> caller)
+        {
+            var errnum = caller();
             if (errnum == 0) return;
             // TODO: TBD: do something with the result...
             // TODO: TBD: introduce an appropriately named exception
