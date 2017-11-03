@@ -25,6 +25,7 @@ namespace Nanomsg2.Sharp
             return result;
         }
 
+        // TODO: TBD: will need to consider the "throw if one of" scenario...
         protected internal virtual void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller, IntPtr ptr)
         {
             var errnum = caller(ptr);
