@@ -46,7 +46,16 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Collections\Generic\FixedSizeCollection.cs" />
+    <Compile Include="Core\Dialer.cs" />
+    <Compile Include="Core\EndPoint.cs" />
+    <Compile Include="Core\IDialer.cs" />
+    <Compile Include="Core\IEndPoint.cs" />
+    <Compile Include="Core\IListener.cs" />
+    <Compile Include="Core\Listener.cs" />
+    <Compile Include="Core\Socket.cs" />
+    <Compile Include="Enums\SocketFlag.cs" />
     <Compile Include="Enums\ErrorCode.cs" />
+    <Compile Include="ICanClose.cs" />
     <Compile Include="IHaveOne.cs" />
     <Compile Include="Disposable.cs" />
     <Compile Include="IInvoker.cs" />
@@ -69,8 +78,10 @@
     <Compile Include="Messaging\MessagePart.cs" />
     <Compile Include="NanoException.cs" />
     <Compile Include="Options\Delegates.cs" />
+    <Compile Include="Options\IHaveOptions.cs" />
     <Compile Include="Options\IOptionReader.cs" />
     <Compile Include="Options\IOptionReaderWriter.cs" />
+    <Compile Include="Options\IOptions.cs" />
     <Compile Include="Options\IOptionWriter.cs" />
     <Compile Include="Options\OptionReader.cs" />
     <Compile Include="Options\OptionReaderWriter.cs" />
@@ -107,9 +118,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
