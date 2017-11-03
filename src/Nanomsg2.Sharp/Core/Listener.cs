@@ -92,7 +92,8 @@ namespace Nanomsg2.Sharp
             opt.SetGetters(
                 (string name, ref int value) => __GetOptInt32(_lid, name, ref value)
                 , (string name, ref ulong value) => __GetOptUInt64(_lid, name, ref value)
-                , (string name, StringBuilder value, ref ulong length) => __GetOptStringBuilder(_lid, name, value, ref length)
+                , (string name, StringBuilder value, ref ulong length) => __GetOptStringBuilder(
+                    _lid, name, value, ref length)
                 , (string name, ref int value) => __GetOptDurationMilliseconds(_lid, name, ref value)
             );
 

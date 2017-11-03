@@ -57,7 +57,7 @@ namespace Nanomsg2.Sharp
 
         private uint _did;
 
-       protected internal override uint Id => _did;
+        protected internal override uint Id => _did;
 
         public Dialer(Socket s, string addr)
         {
@@ -90,7 +90,8 @@ namespace Nanomsg2.Sharp
             opt.SetGetters(
                 (string name, ref int value) => __GetOptInt32(_did, name, ref value)
                 , (string name, ref ulong value) => __GetOptUInt64(_did, name, ref value)
-                , (string name, StringBuilder value, ref ulong length) => __GetOptStringBuilder(_did, name, value, ref length)
+                , (string name, StringBuilder value, ref ulong length) => __GetOptStringBuilder(
+                    _did, name, value, ref length)
                 , (string name, ref int value) => __GetOptDurationMilliseconds(_did, name, ref value)
             );
 
