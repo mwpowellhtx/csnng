@@ -2,7 +2,7 @@ using System;
 
 namespace Nanomsg2.Sharp
 {
-    public interface IOptionWriter
+    public interface IOptionWriter : IOptions
     {
         void SetString(string name, string s);
 
