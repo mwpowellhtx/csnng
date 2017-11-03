@@ -27,18 +27,12 @@ namespace Nanomsg2.Sharp
             _getDurationMilliseconds = getDurationMilliseconds;
         }
 
-        private static int DefaultGetStringBuilder(string name, StringBuilder valuePtr, out ulong sz)
-        {
-            // This one requires special attention on account of the OUT parameter.
-            throw new NotImplementedException();
-        }
-
         internal OptionReader()
         {
             SetGetters(
                 delegate { throw new NotImplementedException(); },
                 delegate { throw new NotImplementedException(); },
-                DefaultGetStringBuilder,
+                delegate { throw new NotImplementedException(); },
                 delegate { throw new NotImplementedException(); }
             );
         }
@@ -49,12 +43,12 @@ namespace Nanomsg2.Sharp
             return GetText(name, ref sz);
         }
 
-        public virtual string GetText(string name, ref ulong sz)
+        public virtual string GetText(string name, ref ulong length)
         {
-            var sb = new StringBuilder((int) sz);
-            _getStringBuilder(name, sb, out sz);
+            var sb = new StringBuilder((int) length);
+            _getStringBuilder(name, sb, ref length);
             var s = sb.ToString().Trim();
-            sz = (ulong) s.LongCount();
+            length = (ulong) s.LongCount();
             return s;
         }
 
