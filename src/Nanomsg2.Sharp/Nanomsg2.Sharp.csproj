@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -43,6 +45,8 @@
     <Compile Include="..\Common\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Collections\Generic\FixedSizeCollection.cs" />
+    <Compile Include="Enums\ErrorCode.cs" />
     <Compile Include="IHaveOne.cs" />
     <Compile Include="Disposable.cs" />
     <Compile Include="Imports.cs" />
@@ -63,6 +67,31 @@
     <Compile Include="Messaging\MessagePart.cs" />
     <Compile Include="NanoException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transports\Enums.cs" />
+    <Compile Include="Transports\Address.cs" />
+    <Compile Include="Collections\Generic\FixedSizeList.cs" />
+    <Compile Include="Transports\AddressFamilyView.cs" />
+    <Compile Include="Transports\IAddress.cs" />
+    <Compile Include="Transports\IAddressFamilyView.cs" />
+    <Compile Include="Collections\Generic\IFixedSizeCollection.cs" />
+    <Compile Include="Collections\Generic\IFixedSizeList.cs" />
+    <Compile Include="Transports\IHaveAddressFamilyView.cs" />
+    <Compile Include="Transports\IHavePort.cs" />
+    <Compile Include="Transports\IInProcessAddressFamilyView.cs" />
+    <Compile Include="Transports\IInterProcessAddressFamilyView.cs" />
+    <Compile Include="Transports\IIPv4AddressFamilyView.cs" />
+    <Compile Include="Transports\IIPv6AddressFamilyView.cs" />
+    <Compile Include="Transports\InProcessAddressFamilyview.cs" />
+    <Compile Include="Transports\IPathAddressFamilyView.cs" />
+    <Compile Include="Transports\InterProcessAddressFamilyView.cs" />
+    <Compile Include="Transports\IPv4AddressFamilyView.cs" />
+    <Compile Include="Transports\IPv6AddressFamilyView.cs" />
+    <Compile Include="Transports\IUnspecifiedAddressFamilyView.cs" />
+    <Compile Include="Transports\IZeroTierAddressFamilyView.cs" />
+    <Compile Include="Transports\PathAddressFamilyView.cs" />
+    <Compile Include="Transports\SockAddr.cs" />
+    <Compile Include="Transports\UnspecifiedAddressFamilyView.cs" />
+    <Compile Include="Transports\ZeroTierAddressFamilyView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\build\nng-prefix\src\nng-build\Debug\nng.dll">
@@ -70,9 +99,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Enums\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
