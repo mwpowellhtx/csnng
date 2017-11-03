@@ -6,7 +6,7 @@ namespace Nanomsg2.Sharp
     // TODO: TBD: not sure we would need the raw IntPtr based getter; most times that is supporting String, that I know of, anyhow...
     internal delegate int GetOptDelegate(string name, ref IntPtr valuePtr, ref ulong sz);
 
-    internal delegate int GetOptStringBuilderDelegate(string name, StringBuilder valuePtr, out ulong sz);
+    internal delegate int GetOptStringBuilderDelegate(string name, StringBuilder valuePtr, ref ulong length);
 
     internal delegate int GetOptDelegate<T>(string name, ref T value);
 
