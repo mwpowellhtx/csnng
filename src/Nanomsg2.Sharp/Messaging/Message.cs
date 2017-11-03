@@ -5,53 +5,52 @@ namespace Nanomsg2.Sharp.Messaging
 {
     using static Imports;
 
-    public class Message : Disposable, IMessage
+    public class Message : Invoker, IMessage
     {
         private IntPtr _msgPtr = IntPtr.Zero;
 
-        // TODO: TBD: probably belongs in another class... along the same lines as "invocation" in C++
-        internal delegate void InvocationHavingNoResult<in T>(T ptr);
 
-        internal delegate TResult InvocationWithResultDelegate<in T, out TResult>(T ptr);
-
-        internal void InvokeHavingNoResult<T>(InvocationHavingNoResult<T> caller, T ptr)
+        protected internal override void InvokeHavingNoResult<T>(InvocationHavingNoResult<T> caller, T ptr)
         {
+            // We override these because we want to perform special handling of the underlying Message Ptr.
             Allocate(ref _msgPtr);
-            caller(ptr);
+            base.InvokeHavingNoResult(caller, ptr);
         }
 
         internal void InvokeHavingNoResult(InvocationHavingNoResult<IntPtr> caller)
         {
+            // We override these because we want to perform special handling of the underlying Message Ptr.
+            Allocate(ref _msgPtr);
             InvokeHavingNoResult(caller, _msgPtr);
         }
 
-        internal void InvokeWithDefaultErrorHandling<T>(InvocationWithResultDelegate<T, int> caller, T ptr)
+        protected internal override void InvokeWithDefaultErrorHandling<T>(InvocationWithResultDelegate<T, int> caller, T ptr)
         {
             Allocate(ref _msgPtr);
             var result = caller(ptr);
             // TODO: TBD: do something with the result...
-        }
-
-        internal TResult InvokeWithResult<T, TResult>(InvocationWithResultDelegate<T, TResult> caller, T ptr)
-        {
-            Allocate(ref _msgPtr);
-            var result = caller(ptr);
-            return result;
         }
 
         internal void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller)
         {
+            InvokeWithDefaultErrorHandling(caller, _msgPtr);
+        }
+
+        protected internal override TResult InvokeWithResult<T, TResult>(InvocationWithResultDelegate<T, TResult> caller, T ptr)
+        {
             Allocate(ref _msgPtr);
-            var errnum = caller(_msgPtr);
-            if (errnum == 0) return;
-            // TODO: TBD: do something with the result...
-            // TODO: TBD: introduce an appropriately named exception
-            throw new NanoException(errnum);
+            return base.InvokeWithResult(caller, ptr);
         }
 
         internal TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<IntPtr, TResult> caller)
         {
             return InvokeWithResult(caller, _msgPtr);
+        }
+
+        protected internal override void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller, IntPtr ptr)
+        {
+            Allocate(ref _msgPtr);
+            base.InvokeWithDefaultErrorHandling(caller, ptr);
         }
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_alloc", CallingConvention = Cdecl)]

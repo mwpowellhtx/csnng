@@ -45,52 +45,52 @@ namespace Nanomsg2.Sharp.Messaging
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_chop", CallingConvention = Cdecl)]
         private static extern int __TrimBytesRight(IntPtr msgPtr, [MarshalAs(U8)] ulong sz);
 
-        internal BodyPart(Message message)
+        internal BodyPart(IMessage message)
             : base(message)
         {
         }
 
-        public override ulong Size => ProtectedParent.InvokeWithResult(__GetLength);
+        public override ulong Size => Invoker.InvokeWithResult(__GetLength);
 
         public override void Clear()
         {
-            ProtectedParent.InvokeHavingNoResult(__Clear);
+            Invoker.InvokeHavingNoResult(__Clear);
         }
 
         public override IEnumerable<byte> Get()
         {
-            var data = ProtectedParent.InvokeWithResult(__GetBytes);
+            var data = Invoker.InvokeWithResult(__GetBytes);
             return DecodeGetResult(data);
         }
 
         public override void Append(uint value)
         {
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __AppendUInt32(ptr, value));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __AppendUInt32(ptr, value));
         }
 
         public override void Prepend(uint value)
         {
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __PrependUInt32(ptr, value));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __PrependUInt32(ptr, value));
         }
 
         protected override uint TrimLeft()
         {
             var x = default(uint);
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimLeftUInt32(ptr, ref x));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __TrimLeftUInt32(ptr, ref x));
             return x;
         }
 
         protected override uint TrimRight()
         {
             var x = default(uint);
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimRightUInt32(ptr, ref x));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __TrimRightUInt32(ptr, ref x));
             return x;
         }
 
         public override void Append(IEnumerable<byte> buffer, ulong sz)
         {
             var b = (buffer ?? new byte[0]).ToArray();
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __AppendByteBuffer(
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __AppendByteBuffer(
                 ptr, b, Min(sz, (ulong) b.Length))
             );
         }
@@ -110,7 +110,7 @@ namespace Nanomsg2.Sharp.Messaging
         public override void Prepend(IEnumerable<byte> buffer, ulong sz)
         {
             var b = (buffer ?? new byte[0]).ToArray();
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __PrependByteBuffer(
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __PrependByteBuffer(
                 ptr, b, Min(sz, (ulong) b.Length))
             );
         }
@@ -133,7 +133,7 @@ namespace Nanomsg2.Sharp.Messaging
             // TODO: TBD: I realize that is a naive look but will specialize the use cases a bit later
             var local = Get();
             result = local.Take((int) sz).ToArray();
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimBytesLeft(ptr, sz));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __TrimBytesLeft(ptr, sz));
         }
 
         public override void TrimRight(ulong sz, out IEnumerable<byte> result)
@@ -141,7 +141,7 @@ namespace Nanomsg2.Sharp.Messaging
             // TODO: TBD: ditto TrimLeft re: size assumptions
             var local = Get().ToArray();
             result = local.Skip(local.Length - (int) sz).ToArray();
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimBytesRight(ptr, sz));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __TrimBytesRight(ptr, sz));
         }
 
         public override void TrimLeft(int length, out string result)

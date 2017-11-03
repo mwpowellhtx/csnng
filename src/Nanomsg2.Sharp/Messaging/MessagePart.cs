@@ -7,13 +7,13 @@ namespace Nanomsg2.Sharp.Messaging
 {
     public abstract class MessagePart : IMessagePart
     {
-        protected Message ProtectedParent { get; }
+        public IMessage Parent { get; }
 
-        public IMessage Parent => ProtectedParent;
+        protected Message Invoker => Parent as Message;
 
-        protected MessagePart(Message parent)
+        protected MessagePart(IMessage parent)
         {
-            ProtectedParent = parent;
+            Parent = parent;
         }
 
         public bool HasOne => Parent?.HasOne ?? false;

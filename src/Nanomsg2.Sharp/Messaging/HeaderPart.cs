@@ -30,45 +30,45 @@ namespace Nanomsg2.Sharp.Messaging
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_header_chop_u32", CallingConvention = Cdecl)]
         private static extern int __TrimRightUInt32(IntPtr msgPtr, [MarshalAs(U4)] ref uint value);
 
-        internal HeaderPart(Message message)
+        internal HeaderPart(IMessage message)
             : base(message)
         {
         }
 
-        public override ulong Size => ProtectedParent.InvokeWithResult(__GetLength);
+        public override ulong Size => Invoker.InvokeWithResult(__GetLength);
 
         public override void Clear()
         {
-            ProtectedParent.InvokeHavingNoResult(__Clear);
+            Invoker.InvokeHavingNoResult(__Clear);
         }
 
         public override IEnumerable<byte> Get()
         {
-            var data = ProtectedParent.InvokeWithResult(__GetBytes);
+            var data = Invoker.InvokeWithResult(__GetBytes);
             return DecodeGetResult(data);
         }
 
         public override void Append(uint value)
         {
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __AppendUInt32(ptr, value));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __AppendUInt32(ptr, value));
         }
 
         public override void Prepend(uint value)
         {
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __PrependUInt32(ptr, value));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __PrependUInt32(ptr, value));
         }
 
         protected override uint TrimLeft()
         {
             var x = default(uint);
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimLeftUInt32(ptr, ref x));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __TrimLeftUInt32(ptr, ref x));
             return x;
         }
 
         protected override uint TrimRight()
         {
             var x = default(uint);
-            ProtectedParent.InvokeWithDefaultErrorHandling(ptr => __TrimRightUInt32(ptr, ref x));
+            Invoker.InvokeWithDefaultErrorHandling(ptr => __TrimRightUInt32(ptr, ref x));
             return x;
         }
     }
