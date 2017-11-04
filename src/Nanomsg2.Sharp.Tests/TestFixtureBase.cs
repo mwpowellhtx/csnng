@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+
 namespace Nanomsg2.Sharp
 {
     using Messaging;
@@ -25,6 +28,11 @@ namespace Nanomsg2.Sharp
             var message = new Message();
             VerifyDefaultMessage(message);
             return message;
+        }
+
+        protected static void DisposeAll(params IDisposable[] items)
+        {
+            items.ToList().ForEach(d => d?.Dispose());
         }
     }
 }
