@@ -83,6 +83,7 @@
     <Compile Include="Messaging\MessagePartTestBase.cs" />
     <Compile Include="Messaging\MessageTestBase.cs" />
     <Compile Include="Messaging\MessageTests.cs" />
+    <Compile Include="Protocols\Pipeline\PipelineTests.cs" />
     <Compile Include="SocketPolling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocols\Bus\BusTests.cs" />
@@ -117,7 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Protocols\Pair\" />
-    <Folder Include="Protocols\Pipeline\" />
     <Folder Include="Protocols\Pubsub\" />
     <Folder Include="Protocols\Reqrep\" />
     <Folder Include="Protocols\Survey\" />
