@@ -26,48 +26,53 @@ namespace Nanomsg2.Sharp.Protocols.Bus
         {
             Facilitate = action =>
             {
-                Given($"three {typeof(LatestBusSocket).FullName} instances", () =>
+                try
                 {
-                    _sockets = new[]
+                    Given($"three {typeof(LatestBusSocket).FullName} instances", () =>
                     {
-                        CreateOne<LatestBusSocket>(),
-                        CreateOne<LatestBusSocket>(),
-                        CreateOne<LatestBusSocket>()
-                    };
-
-                    _sockets[0].Listen(TestAddr);
-                    _sockets[1].Dial(TestAddr);
-                    _sockets[2].Dial(TestAddr);
-
-                    var recvTimeout = FromMilliseconds(50d);
-
-                    _sockets[0].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
-                    _sockets[1].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
-                    _sockets[2].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
-
-                    Section("messages can be delivered", () =>
-                    {
-                        var m = _message = CreateMessage();
-
-                        var b1 = _sockets[0];
-                        var b2 = _sockets[1];
-                        var b3 = _sockets[2];
-
-                        Section("receive times out", () =>
+                        _sockets = new[]
                         {
-                            Assert.Throws<NanoException>(() => b1.TryReceive(m))
-                                .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
-                            Assert.Throws<NanoException>(() => b2.TryReceive(m))
-                                .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
-                            Assert.Throws<NanoException>(() => b3.TryReceive(m))
-                                .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                            CreateOne<LatestBusSocket>(),
+                            CreateOne<LatestBusSocket>(),
+                            CreateOne<LatestBusSocket>()
+                        };
 
-                            action();
+                        _sockets[0].Listen(TestAddr);
+                        _sockets[1].Dial(TestAddr);
+                        _sockets[2].Dial(TestAddr);
+
+                        var recvTimeout = FromMilliseconds(50d);
+
+                        _sockets[0].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
+                        _sockets[1].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
+                        _sockets[2].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
+
+                        Section("messages can be delivered", () =>
+                        {
+                            var m = _message = CreateMessage();
+
+                            var b1 = _sockets[0];
+                            var b2 = _sockets[1];
+                            var b3 = _sockets[2];
+
+                            Section("receive times out", () =>
+                            {
+                                Assert.Throws<NanoException>(() => b1.TryReceive(m))
+                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                                Assert.Throws<NanoException>(() => b2.TryReceive(m))
+                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                                Assert.Throws<NanoException>(() => b3.TryReceive(m))
+                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+
+                                action();
+                            });
                         });
                     });
-                });
-
-                DisposeAll(_sockets.ToArray<IDisposable>());
+                }
+                finally
+                {
+                    DisposeAll(_sockets.ToArray<IDisposable>());
+                }
             };
         }
 

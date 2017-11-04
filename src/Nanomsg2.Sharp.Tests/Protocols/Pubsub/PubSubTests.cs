@@ -1,4 +1,5 @@
 using System;
+using Nanomsg2.Sharp.Messaging;
 
 namespace Nanomsg2.Sharp.Protocols.Pubsub
 {
@@ -11,7 +12,6 @@ namespace Nanomsg2.Sharp.Protocols.Pubsub
     public class PubSubTests : ProtocolTestBase
     {
         private const string TestAddr = "inproc://test";
-        private const string Hello = "hello";
         private const string Abc = "abc";
         private const string Empty = "";
 
@@ -70,20 +70,28 @@ namespace Nanomsg2.Sharp.Protocols.Pubsub
 
             Given_fresh_slate("can create linked sockets", () =>
             {
-                var pub = CreateOne<LatestPubSocket>();
-                var sub = CreateOne<LatestSubSocket>();
+                LatestPubSocket pub = null;
+                LatestSubSocket sub = null;
 
-                // Serves other paths of unit testing.
-                sub.Options.SetDuration(O.RecvTimeoutDuration, FromMilliseconds(90d));
+                try
+                {
+                    pub = CreateOne<LatestPubSocket>();
+                    sub = CreateOne<LatestSubSocket>();
 
-                // TODO: TBD: yes, in this case, Subscriber is the "server" listening for publishers.
-                // TODO: TBD: I would think this might be the other way round... or could be... does not necessarily HAVE to be...
-                sub.Listen(TestAddr);
-                pub.Dial(TestAddr);
+                    // Serves other paths of unit testing.
+                    sub.Options.SetDuration(O.RecvTimeoutDuration, FromMilliseconds(90d));
 
-                callback(pub, sub);
+                    // TODO: TBD: yes, in this case, Subscriber is the "server" listening for publishers.
+                    // TODO: TBD: I would think this might be the other way round... or could be... does not necessarily HAVE to be...
+                    sub.Listen(TestAddr);
+                    pub.Dial(TestAddr);
 
-                DisposeAll(pub, sub);
+                    callback(pub, sub);
+                }
+                finally
+                {
+                    DisposeAll(pub, sub);
+                }
             });
         }
 
@@ -172,12 +180,18 @@ namespace Nanomsg2.Sharp.Protocols.Pubsub
                     {
                         Section($"Topic: '{x}'", () =>
                         {
-                            using (var m = CreateMessage())
+                            Message m = null;
+                            try
                             {
+                                m = CreateMessage();
                                 m.Body.Append(x);
                                 pub.Send(m);
                                 Assert.Throws<NanoException>(() => sub.TryReceive(m))
                                     .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                            }
+                            finally
+                            {
+                                DisposeAll(m);
                             }
                         });
                     }
