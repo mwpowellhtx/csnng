@@ -10,6 +10,14 @@ namespace Nanomsg2.Sharp
         public delegate bool ExceptionFilter<in T>(T ex)
             where T : Exception;
 
+        public static void Matching<T>(this T ex, Expression<ExceptionFilter<T>> filterExpr)
+            where T : Exception
+        {
+            var filter = filterExpr.Compile();
+            Assert.True(filter(ex), $"Expected exception {typeof(T)} to be thrown but was not. Using filter: {filterExpr.Body}");
+        }
+
+        [Obsolete("The xUnit Assert.Throws returns the exception, so use the Matching")]
         public static void Throws<T>(Action action, Expression<ExceptionFilter<T>> filterExpr)
             where T : Exception
         {

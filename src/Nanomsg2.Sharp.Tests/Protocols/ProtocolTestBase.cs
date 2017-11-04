@@ -1,12 +1,12 @@
 using System;
-using Nanomsg2.Sharp.Messaging;
 
 namespace Nanomsg2.Sharp.Protocols
 {
+    using Messaging;
     using Xunit;
     using Xunit.Abstractions;
 
-    public abstract class ProtocolTestBase<TSocket> : TestFixtureBase
+    public abstract class ProtocolTestBase<TSocket> : BehaviorDrivenTestFixtureBase
         where TSocket : Socket, new()
 
     {
