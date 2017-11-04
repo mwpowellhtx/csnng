@@ -17,7 +17,6 @@ namespace Nanomsg2.Sharp.Protocols.Reqrep
         private const string Ping = "ping";
         private const string Pong = "pong";
 
-
         public ReqRepTests(ITestOutputHelper @out)
             : base(@out)
         {
