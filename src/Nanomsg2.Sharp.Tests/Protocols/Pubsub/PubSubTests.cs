@@ -11,7 +11,6 @@ namespace Nanomsg2.Sharp.Protocols.Pubsub
 
     public class PubSubTests : ProtocolTestBase
     {
-        private const string TestAddr = "inproc://test";
         private const string Abc = "abc";
         private const string Empty = "";
 
@@ -75,6 +74,8 @@ namespace Nanomsg2.Sharp.Protocols.Pubsub
 
                 try
                 {
+                    var addr = TestAddr;
+
                     pub = CreateOne<LatestPubSocket>();
                     sub = CreateOne<LatestSubSocket>();
 
@@ -83,8 +84,8 @@ namespace Nanomsg2.Sharp.Protocols.Pubsub
 
                     // TODO: TBD: yes, in this case, Subscriber is the "server" listening for publishers.
                     // TODO: TBD: I would think this might be the other way round... or could be... does not necessarily HAVE to be...
-                    sub.Listen(TestAddr);
-                    pub.Dial(TestAddr);
+                    sub.Listen(addr);
+                    pub.Dial(addr);
 
                     callback(pub, sub);
                 }

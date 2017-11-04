@@ -12,7 +12,6 @@ namespace Nanomsg2.Sharp.Protocols.Bus
 
     public class BusTests : ProtocolTestBase
     {
-        private const string TestAddr = "inproc://test";
         private const string NinetyNineBits = "99bits";
         private const string OnThe = "onthe";
 
@@ -28,6 +27,8 @@ namespace Nanomsg2.Sharp.Protocols.Bus
             {
                 try
                 {
+                    var addr = TestAddr;
+
                     Given($"three {typeof(LatestBusSocket).FullName} instances", () =>
                     {
                         _sockets = new[]
@@ -37,9 +38,9 @@ namespace Nanomsg2.Sharp.Protocols.Bus
                             CreateOne<LatestBusSocket>()
                         };
 
-                        _sockets[0].Listen(TestAddr);
-                        _sockets[1].Dial(TestAddr);
-                        _sockets[2].Dial(TestAddr);
+                        _sockets[0].Listen(addr);
+                        _sockets[1].Dial(addr);
+                        _sockets[2].Dial(addr);
 
                         var recvTimeout = FromMilliseconds(50d);
 
@@ -77,13 +78,13 @@ namespace Nanomsg2.Sharp.Protocols.Bus
         }
 
         [Fact]
-        public void That_default_socket_correct()
+        public virtual void That_default_socket_correct()
         {
             Given_default_socket<LatestBusSocket>();
         }
 
         [Fact]
-        public void That_Bus2_delivers_message_to_Bus1_and_Bus3_times_out()
+        public virtual void That_Bus2_delivers_message_to_Bus1_and_Bus3_times_out()
         {
             Facilitate(() =>
             {
@@ -110,7 +111,7 @@ namespace Nanomsg2.Sharp.Protocols.Bus
         }
 
         [Fact]
-        public void That_Bus1_delivers_message_to_both_Bus2_and_Bus3()
+        public virtual void That_Bus1_delivers_message_to_both_Bus2_and_Bus3()
         {
             Facilitate(() =>
             {

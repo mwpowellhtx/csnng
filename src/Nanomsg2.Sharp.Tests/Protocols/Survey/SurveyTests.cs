@@ -11,7 +11,6 @@ namespace Nanomsg2.Sharp.Protocols.Survey
 
     public class SurveyTests : ProtocolTestBase
     {
-        private const string TestAddr = "inproc://test";
         private const string Abc = "abc";
         private const string Def = "def";
 
@@ -97,6 +96,8 @@ namespace Nanomsg2.Sharp.Protocols.Survey
 
         private void We_can_create_linked_Sockets(LinkedSocketsCallback callback)
         {
+            var addr = TestAddr;
+
             Section("We can create linked Sockets", () =>
             {
                 LatestSurveyorSocket sur = null;
@@ -109,12 +110,12 @@ namespace Nanomsg2.Sharp.Protocols.Survey
 
                     sur.Options.SetDuration(O.SurveyorSurveyDuration, FromMilliseconds(50d));
 
-                    sur.Listen(TestAddr);
-                    resp.Dial(TestAddr);
+                    sur.Listen(addr);
+                    resp.Dial(addr);
 
                     using (var s = CreateOne<LatestRespondentSocket>())
                     {
-                        s.Dial(TestAddr);
+                        s.Dial(addr);
                     }
 
                     callback(sur, resp);

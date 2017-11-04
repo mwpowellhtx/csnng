@@ -11,7 +11,6 @@ namespace Nanomsg2.Sharp.Protocols.Reqrep
 
     public class ReqRepTests : ProtocolTestBase
     {
-        private const string TestAddr = "inproc://test";
         private const string Abc = "abc";
         private const string Def = "def";
         private const string Ping = "ping";
@@ -116,12 +115,14 @@ namespace Nanomsg2.Sharp.Protocols.Reqrep
 
         private void We_can_create_linked_sockets(LinkedSocketsCallback callback)
         {
+            var addr = TestAddr;
+
             Given_two_fresh_sockets((req, rep) =>
             {
                 Section("we can create linked sockets", () =>
                 {
-                    rep.Listen(TestAddr);
-                    req.Dial(TestAddr);
+                    rep.Listen(addr);
+                    req.Dial(addr);
 
                     callback(req, rep);
                 });
@@ -165,13 +166,15 @@ namespace Nanomsg2.Sharp.Protocols.Reqrep
         [Fact]
         public void Request_cancellation_works()
         {
+            var addr = TestAddr;
+
             Given_two_fresh_sockets((req, rep) =>
             {
                 req.Options.SetDuration(O.ReqResendDuration, FromMilliseconds(100d));
                 req.Options.SetInt32(O.SendBuf, 16);
 
-                rep.Listen(TestAddr);
-                req.Dial(TestAddr);
+                rep.Listen(addr);
+                req.Dial(addr);
 
                 Message abc = null;
                 Message def = null;

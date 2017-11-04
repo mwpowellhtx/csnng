@@ -8,10 +8,32 @@ namespace Nanomsg2.Sharp.Protocols
     using Xunit.Abstractions;
     using static ErrorCode;
     using O = Options;
+    using static SocketAddressFamily;
 
     public abstract class ProtocolTestBase : BehaviorDrivenTestFixtureBase
-
     {
+        protected virtual SocketAddressFamily Family { get; } = InProcess;
+
+        private SocketAddressFamily VerifyFamily(SocketAddressFamily family)
+        {
+            if (new[] {Unspecified, ZeroTier}.Contains(family))
+            {
+                throw new ArgumentException($"Family unsupported (for now): '{family}'", nameof(family));
+            }
+            Report($"Running protocol tests for address family '{family}'.");
+            return family;
+        }
+
+        protected string TestAddr
+        {
+            get
+            {
+                var addr = VerifyFamily(Family).BuildAddress();
+                Report($"Testing using address '{addr}'.");
+                return addr;
+            }
+        }
+
         protected static void VerifyDefaultSocket<T>(T s)
             where T : Socket, new()
         {

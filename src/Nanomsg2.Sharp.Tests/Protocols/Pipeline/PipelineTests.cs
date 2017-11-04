@@ -12,7 +12,6 @@ namespace Nanomsg2.Sharp.Protocols.Pipeline
 
     public class PipelineTests : ProtocolTestBase
     {
-        private const string TestAddr = "inproc://test";
         private const string Hello = "hello";
         private const string Abc = "abc";
         private const string Def = "def";
@@ -49,15 +48,17 @@ namespace Nanomsg2.Sharp.Protocols.Pipeline
 
             try
             {
+                var addr = TestAddr;
+
                 pull = CreateOne<LatestPullSocket>();
                 push = CreateOne<LatestPushSocket>();
 
-                pull.Listen(TestAddr);
-                push.Dial(TestAddr);
+                pull.Listen(addr);
+                push.Dial(addr);
 
                 using (var what = CreateOne<LatestPullSocket>())
                 {
-                    what.Dial(TestAddr);
+                    what.Dial(addr);
                 }
 
                 Sleep(FromMilliseconds(20d));
@@ -95,6 +96,8 @@ namespace Nanomsg2.Sharp.Protocols.Pipeline
 
             try
             {
+                var addr = TestAddr;
+
                 push = CreateOne<LatestPushSocket>();
 
                 pull1 = CreateOne<LatestPullSocket>();
@@ -118,10 +121,10 @@ namespace Nanomsg2.Sharp.Protocols.Pipeline
                 ConfigureAll(setDefaultSendReceiveBufferSizes, push, pull1, pull2, pull3);
                 ConfigureAll(setReceiveTimeoutDuration, pull1, pull2, pull3);
 
-                push.Listen(TestAddr);
-                pull1.Dial(TestAddr);
-                pull2.Dial(TestAddr);
-                pull3.Dial(TestAddr);
+                push.Listen(addr);
+                pull1.Dial(addr);
+                pull2.Dial(addr);
+                pull3.Dial(addr);
                 pull3.Dispose();
 
                 Sleep(timeout);
