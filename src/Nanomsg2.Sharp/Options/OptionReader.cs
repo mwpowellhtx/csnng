@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Nanomsg2.Sharp
 {
-    public class OptionReader : IOptionReader
+    public class OptionReader : Invoker, IOptionReader
     {
         private GetOptDelegate<int> _getInt32;
 
@@ -25,16 +25,22 @@ namespace Nanomsg2.Sharp
             _getUInt64 = getUInt64;
             _getStringBuilder = getStringBuilder;
             _getDurationMilliseconds = getDurationMilliseconds;
+            _configured = true;
         }
+
+        private bool _configured;
+
+        public virtual bool HasOne => _configured;
 
         internal OptionReader()
         {
             SetGetters(
-                delegate { throw new NotImplementedException(); },
-                delegate { throw new NotImplementedException(); },
-                delegate { throw new NotImplementedException(); },
-                delegate { throw new NotImplementedException(); }
+                delegate { throw ThrowInvalidOperation(nameof(_getInt32)); }
+                , delegate { throw ThrowInvalidOperation(nameof(_getUInt64)); }
+                , delegate { throw ThrowInvalidOperation(nameof(_getStringBuilder)); }
+                , delegate { throw ThrowInvalidOperation(nameof(_getDurationMilliseconds)); }
             );
+            _configured = false;
         }
 
         public virtual string GetText(string name)
@@ -45,8 +51,9 @@ namespace Nanomsg2.Sharp
 
         public virtual string GetText(string name, ref ulong length)
         {
+            var sz = length;
             var sb = new StringBuilder((int) length);
-            _getStringBuilder(name, sb, ref length);
+            DefaultInvoker.InvokeWithDefaultErrorHandling(() => _getStringBuilder(name, sb, ref sz));
             var s = sb.ToString().Trim();
             length = (ulong) s.LongCount();
             return s;
@@ -55,21 +62,14 @@ namespace Nanomsg2.Sharp
         public virtual int GetInt32(string name)
         {
             var value = default(int);
-            _getInt32(name, ref value);
+            DefaultInvoker.InvokeWithDefaultErrorHandling(() => _getInt32(name, ref value));
             return value;
         }
 
         public virtual ulong GetSize(string name)
         {
             var value = default(ulong);
-            _getUInt64(name, ref value);
-            return value;
-        }
-
-        public virtual double GetTotalMilliseconds(string name)
-        {
-            var value = default(int);
-            _getDurationMilliseconds(name, ref value);
+            DefaultInvoker.InvokeWithDefaultErrorHandling(() => _getUInt64(name, ref value));
             return value;
         }
 
@@ -77,6 +77,13 @@ namespace Nanomsg2.Sharp
         {
             var value = GetTotalMilliseconds(name);
             return TimeSpan.FromMilliseconds(value);
+        }
+
+        public virtual double GetTotalMilliseconds(string name)
+        {
+            var value = default(int);
+            DefaultInvoker.InvokeWithDefaultErrorHandling(() => _getDurationMilliseconds(name, ref value));
+            return value;
         }
     }
 }

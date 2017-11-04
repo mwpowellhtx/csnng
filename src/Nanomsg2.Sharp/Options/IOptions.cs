@@ -1,6 +1,6 @@
 namespace Nanomsg2.Sharp
 {
-    public interface IOptions
+    public interface IOptions : IHaveOne
     {
     }
 }
