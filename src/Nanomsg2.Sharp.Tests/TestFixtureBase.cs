@@ -6,6 +6,7 @@ namespace Nanomsg2.Sharp
     using Messaging;
     using Xunit;
     using Xunit.Abstractions;
+    using static Math;
 
     public abstract class TestFixtureBase
     {
@@ -33,6 +34,27 @@ namespace Nanomsg2.Sharp
         protected static void DisposeAll(params IDisposable[] items)
         {
             items.ToList().ForEach(d => d?.Dispose());
+        }
+    }
+
+    internal static class PortExtensionMethods
+    {
+        private const int MinPort = 10000;
+        private const int MaxPort = 10999;
+
+        private static int? _port;
+
+        private static int GetPort(int delta)
+        {
+            _port = _port ?? 0;
+            _port += delta;
+            // ReSharper disable once PossibleInvalidOperationException
+            return (_port = Max(MinPort, Min(_port.Value, MaxPort))).Value;
+        }
+
+        public static string WithPort(this string addr, int delta = 1)
+        {
+            return $"{addr}:{GetPort(delta)}";
         }
     }
 }
