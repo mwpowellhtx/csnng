@@ -87,6 +87,9 @@
     <Compile Include="Protocols\Bus\InterProcessBusTests.cs" />
     <Compile Include="Protocols\Bus\IPv6BusTests.cs" />
     <Compile Include="Protocols\Bus\IPv4BusTests.cs" />
+    <Compile Include="Protocols\Pipeline\InterProcessPipelineTests.cs" />
+    <Compile Include="Protocols\Pipeline\IPv6PipelineTests.cs" />
+    <Compile Include="Protocols\Pipeline\IPv4PipelineTests.cs" />
     <Compile Include="Protocols\Pipeline\PipelineTests.cs" />
     <Compile Include="Protocols\Pubsub\PubSubTests.cs" />
     <Compile Include="Protocols\Reqrep\ReqRepTests.cs" />
