@@ -1,5 +1,6 @@
 namespace Nanomsg2.Sharp
 {
+    using static SocketFlags;
     public abstract class EndPoint : Invoker, IEndPoint
     {
         protected delegate int StartDelegate(int flags);
@@ -33,13 +34,15 @@ namespace Nanomsg2.Sharp
             ProtectedOptions = new OptionReaderWriter();
         }
 
-        public virtual void Start(int flags)
+        public virtual void Start(SocketFlag flags = None)
         {
-            DefaultInvoker.InvokeWithDefaultErrorHandling(() => _start(flags));
+            if (HasOne) return;
+            DefaultInvoker.InvokeWithDefaultErrorHandling(() => _start((int) flags));
         }
 
         public virtual void Close()
         {
+            if (!HasOne) return;
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => _close());
         }
     }
