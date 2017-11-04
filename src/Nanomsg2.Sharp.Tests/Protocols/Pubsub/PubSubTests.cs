@@ -1,8 +1,8 @@
 using System;
-using Nanomsg2.Sharp.Messaging;
 
 namespace Nanomsg2.Sharp.Protocols.Pubsub
 {
+    using Messaging;
     using Xunit;
     using Xunit.Abstractions;
     using static TimeSpan;
