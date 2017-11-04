@@ -4,6 +4,11 @@ namespace Nanomsg2.Sharp
 {
     public class Invoker : Disposable, IInvoker
     {
+        protected static InvalidOperationException ThrowInvalidOperation(string operationName)
+        {
+            return new InvalidOperationException($"{operationName} has not been configured.");
+        }
+
         protected Invoker DefaultInvoker { get; }
 
         protected Invoker()
