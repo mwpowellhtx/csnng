@@ -40,4 +40,9 @@ namespace Nanomsg2.Sharp
         SystemError = 0x10000000, // NNG_ESYSERR,
         TransportError = 0x20000000, // NNG_ETRANERR,
     };
+
+    public static class ErrorCodeExtensionMethods
+    {
+        public static ErrorCode ToErrorCode(this int value) => (ErrorCode) value;
+    }
 }
