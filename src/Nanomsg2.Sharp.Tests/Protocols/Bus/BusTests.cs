@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace Nanomsg2.Sharp.Protocols.Bus
 {
@@ -15,66 +14,9 @@ namespace Nanomsg2.Sharp.Protocols.Bus
         private const string NinetyNineBits = "99bits";
         private const string OnThe = "onthe";
 
-        private Message _message;
-        private LatestBusSocket[] _sockets;
-
-        private ScenarioDelegate Facilitate { get; }
-
         public BusTests(ITestOutputHelper @out)
             : base(@out)
         {
-            Facilitate = action =>
-            {
-                try
-                {
-                    var addr = TestAddr;
-
-                    Given($"three {typeof(LatestBusSocket).FullName} instances", () =>
-                    {
-                        _sockets = new[]
-                        {
-                            CreateOne<LatestBusSocket>(),
-                            CreateOne<LatestBusSocket>(),
-                            CreateOne<LatestBusSocket>()
-                        };
-
-                        _sockets[0].Listen(addr);
-                        _sockets[1].Dial(addr);
-                        _sockets[2].Dial(addr);
-
-                        var recvTimeout = FromMilliseconds(50d);
-
-                        _sockets[0].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
-                        _sockets[1].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
-                        _sockets[2].Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
-
-                        Section("messages can be delivered", () =>
-                        {
-                            var m = _message = CreateMessage();
-
-                            var b1 = _sockets[0];
-                            var b2 = _sockets[1];
-                            var b3 = _sockets[2];
-
-                            Section("receive times out", () =>
-                            {
-                                Assert.Throws<NanoException>(() => b1.TryReceive(m))
-                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
-                                Assert.Throws<NanoException>(() => b2.TryReceive(m))
-                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
-                                Assert.Throws<NanoException>(() => b3.TryReceive(m))
-                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
-
-                                action();
-                            });
-                        });
-                    });
-                }
-                finally
-                {
-                    DisposeAll(_sockets.ToArray<IDisposable>());
-                }
-            };
         }
 
         [Fact]
@@ -83,29 +25,89 @@ namespace Nanomsg2.Sharp.Protocols.Bus
             Given_default_socket<LatestBusSocket>();
         }
 
+        private delegate void LinkedSocketCallback(LatestBusSocket bus1, LatestBusSocket bus2, LatestBusSocket bus3);
+
+        private void Given_Bus_sockets(LinkedSocketCallback callback)
+        {
+            var addr = TestAddr;
+
+            Given($"three '{typeof(LatestBusSocket).FullName}' instances", () =>
+            {
+                LatestBusSocket bus1 = null;
+                LatestBusSocket bus2 = null;
+                LatestBusSocket bus3 = null;
+
+                try
+                {
+                    bus1 = CreateOne<LatestBusSocket>();
+                    bus2 = CreateOne<LatestBusSocket>();
+                    bus3 = CreateOne<LatestBusSocket>();
+
+                    bus1.Listen(addr);
+                    bus2.Dial(addr);
+                    bus3.Dial(addr);
+
+                    var recvTimeout = FromMilliseconds(50d);
+
+                    bus1.Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
+                    bus2.Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
+                    bus3.Options.SetDuration(O.RecvTimeoutDuration, recvTimeout);
+
+                    Section("messages can be delivered", () =>
+                    {
+                        Section("receive times out", () =>
+                        {
+                            Message m = null;
+                            try
+                            {
+                                m = CreateMessage();
+
+                                var n = m;
+
+                                Assert.Throws<NanoException>(() => bus1.TryReceive(n))
+                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                                Assert.Throws<NanoException>(() => bus2.TryReceive(n))
+                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                                Assert.Throws<NanoException>(() => bus3.TryReceive(n))
+                                    .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                            }
+                            finally
+                            {
+                                m?.Dispose();
+                            }
+                        });
+
+                        callback(bus1, bus2, bus3);
+                    });
+                }
+                finally
+                {
+                    DisposeAll(bus1, bus2, bus3);
+                }
+            });
+        }
+
         [Fact]
         public virtual void That_Bus2_delivers_message_to_Bus1_and_Bus3_times_out()
         {
-            Facilitate(() =>
+            Given_Bus_sockets((bus1, bus2, bus3) =>
             {
                 Section("Bus2 delivers message to Bus1, Bus3 times out", () =>
                 {
-                    var m = _message;
+                    using (var m = CreateMessage())
+                    {
+                        m.Body.Append(NinetyNineBits);
+                        bus2.Send(m);
+                        Assert.True(bus1.TryReceive(m));
+                        Assert.Equal(NinetyNineBits.ToBytes(), m.Body.Get());
 
-                    var b1 = _sockets[0];
-                    var b2 = _sockets[1];
-                    var b3 = _sockets[2];
+                        m.Clear();
 
-                    m.Body.Append(NinetyNineBits);
-                    b2.Send(m);
-                    Assert.True(b1.TryReceive(m));
-                    Assert.Equal(NinetyNineBits.ToBytes(), m.Body.Get());
-                    m.Dispose();
+                        var n = m;
 
-                    m = CreateMessage();
-
-                    Assert.Throws<NanoException>(() => b3.TryReceive(m))
-                        .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                        Assert.Throws<NanoException>(() => bus3.TryReceive(n))
+                            .Matching(ex => ex.ErrorNumber.ToErrorCode() == TimedOut);
+                    }
                 });
             });
         }
@@ -113,38 +115,27 @@ namespace Nanomsg2.Sharp.Protocols.Bus
         [Fact]
         public virtual void That_Bus1_delivers_message_to_both_Bus2_and_Bus3()
         {
-            Facilitate(() =>
+            Given_Bus_sockets((bus1, bus2, bus3) =>
             {
                 Section("Bus1 delivers message to both Bus2 and Bus3", () =>
                 {
-                    var m = _message;
-
-                    var b1 = _sockets[0];
-                    var b2 = _sockets[1];
-                    var b3 = _sockets[2];
-
-                    m.Body.Append(OnThe);
-                    b1.Send(m);
-
-                    Assert.True(b2.TryReceive(m));
-                    Assert.Equal(OnThe.ToBytes(), m.Body.Get());
-
-                    using (var m2 = CreateMessage())
+                    using (var m = CreateMessage())
                     {
-                        Assert.True(b3.TryReceive(m2));
-                        Assert.Equal(OnThe.ToBytes(), m2.Body.Get());
-                        Assert.False(m2.SameAs(m));
+                        m.Body.Append(OnThe);
+                        bus1.Send(m);
+
+                        Assert.True(bus2.TryReceive(m));
+                        Assert.Equal(OnThe.ToBytes(), m.Body.Get());
+
+                        using (var m2 = CreateMessage())
+                        {
+                            Assert.True(bus3.TryReceive(m2));
+                            Assert.Equal(OnThe.ToBytes(), m2.Body.Get());
+                            Assert.False(m2.SameAs(m));
+                        }
                     }
                 });
             });
-        }
-
-        ~BusTests()
-        {
-            _message?.Dispose();
-            _sockets?[0]?.Dispose();
-            _sockets?[1]?.Dispose();
-            _sockets?[2]?.Dispose();
         }
     }
 }
