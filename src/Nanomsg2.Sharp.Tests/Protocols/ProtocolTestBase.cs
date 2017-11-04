@@ -18,13 +18,6 @@ namespace Nanomsg2.Sharp.Protocols
             Assert.True(s.Options.HasOne);
         }
 
-        protected static void VerifyDefaultMessage(Message m)
-        {
-            Assert.NotNull(m);
-            Assert.True(m.HasOne);
-            Assert.True(m.Size == 0ul);
-        }
-
         protected ProtocolTestBase(ITestOutputHelper @out)
             : base(@out)
         {
@@ -41,13 +34,6 @@ namespace Nanomsg2.Sharp.Protocols
         {
             Assert.True(value > 0d || value.Equals(0d));
             return TimeSpan.FromMilliseconds(value);
-        }
-
-        protected static Message CreateMessage()
-        {
-            var message = new Message();
-            VerifyDefaultMessage(message);
-            return message;
         }
 
         [Fact]

@@ -1,5 +1,7 @@
 namespace Nanomsg2.Sharp
 {
+    using Messaging;
+    using Xunit;
     using Xunit.Abstractions;
 
     public abstract class TestFixtureBase
@@ -9,6 +11,20 @@ namespace Nanomsg2.Sharp
         protected TestFixtureBase(ITestOutputHelper @out)
         {
             Out = @out;
+        }
+
+        protected static void VerifyDefaultMessage(Message m)
+        {
+            Assert.NotNull(m);
+            Assert.True(m.HasOne);
+            Assert.True(m.Size == 0ul);
+        }
+
+        protected static Message CreateMessage()
+        {
+            var message = new Message();
+            VerifyDefaultMessage(message);
+            return message;
         }
     }
 }
