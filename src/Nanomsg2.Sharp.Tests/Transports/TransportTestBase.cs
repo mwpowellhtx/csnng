@@ -2,13 +2,11 @@ namespace Nanomsg2.Sharp.Transports
 {
     using Xunit.Abstractions;
 
-    public abstract class TransportTestBase
+    public abstract class TransportTestBase : TestFixtureBase
     {
-        protected ITestOutputHelper Out { get; }
-
         protected TransportTestBase(ITestOutputHelper @out)
+            : base(@out)
         {
-            Out = @out;
         }
     }
 }
