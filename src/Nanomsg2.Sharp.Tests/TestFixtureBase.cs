@@ -30,12 +30,12 @@ namespace Nanomsg2.Sharp
 
         ~TestFixtureBase()
         {
-            // TODO: TBD: seems to me like this is better; but still an issue in the runner?
-            lock (Sync)
-            {
-                --_count;
-                if (_count == 0) Fini();
-            }
+            //// TODO: TBD: seems to me like this is better; but still an issue in the runner?
+            //lock (Sync)
+            //{
+            //    --_count;
+            //    if (_count == 0) Fini();
+            //}
             //// TODO: TBD: could it be this was causing a premature shutdown? running multiple tests? doesn't seem like it...
             //Fini();
         }
