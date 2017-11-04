@@ -99,6 +99,9 @@
     <Compile Include="Protocols\Reqrep\IPv6ReqRepTests.cs" />
     <Compile Include="Protocols\Reqrep\IPv4ReqRepTests.cs" />
     <Compile Include="Protocols\Reqrep\ReqRepTests.cs" />
+    <Compile Include="Protocols\Survey\InterProcessSurveyTests.cs" />
+    <Compile Include="Protocols\Survey\IPv4SurveyTests.cs" />
+    <Compile Include="Protocols\Survey\IPv6SurveyTests.cs" />
     <Compile Include="Protocols\Survey\SurveyTests.cs" />
     <Compile Include="SocketPolling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
