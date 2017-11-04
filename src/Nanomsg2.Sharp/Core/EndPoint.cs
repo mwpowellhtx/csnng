@@ -1,6 +1,7 @@
 namespace Nanomsg2.Sharp
 {
-    using static SocketFlags;
+    using static SocketFlag;
+
     public abstract class EndPoint : Invoker, IEndPoint
     {
         protected delegate int StartDelegate(int flags);
