@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Nanomsg2.Sharp.Protocols
 {
     using Xunit;
     using Xunit.Abstractions;
+    using static ErrorCode;
+    using O = Options;
 
     public abstract class ProtocolTestBase : BehaviorDrivenTestFixtureBase
 
@@ -21,6 +24,11 @@ namespace Nanomsg2.Sharp.Protocols
         protected ProtocolTestBase(ITestOutputHelper @out)
             : base(@out)
         {
+        }
+
+        protected virtual void Given_fresh_slate(string title, Action action)
+        {
+            Section(title, action);
         }
 
         protected virtual void Given_default_socket<T>()
@@ -72,6 +80,93 @@ namespace Nanomsg2.Sharp.Protocols
         {
             Assert.True(value > 0d || value.Equals(0d));
             return TimeSpan.FromMilliseconds(value);
+        }
+
+        protected virtual void That_default_Receiver_Socket_correct<T>()
+            where T : Socket, new()
+        {
+            const string bufferTypeName = "System.Collections.Generic.IEnumerable<System.Byte>";
+            var exceptionTypeName = typeof(InvalidOperationException).FullName;
+
+            Given_default_socket<T>(s =>
+            {
+                var bytes = new byte[0];
+                var m = CreateMessage();
+
+                Section($"does not support '{O.SendFd}'", () =>
+                {
+                    Assert.Throws<NanoException>(() => s.Options.GetInt32(O.SendFd))
+                        .Matching(ex => ex.ErrorNumber.ToErrorCode() == NotSupported);
+                });
+
+                Section($"send '{m.GetType().FullName}' throws '{exceptionTypeName}'", () =>
+                {
+                    Assert.Throws<InvalidOperationException>(() => s.Send(m));
+                });
+
+                Section($"send '{typeof(string).FullName}' throws '{exceptionTypeName}'", () =>
+                {
+                    Assert.Throws<InvalidOperationException>(() => s.Send(string.Empty));
+                });
+
+                Section($"send '{bufferTypeName}' throws '{exceptionTypeName}'", () =>
+                {
+                    Assert.Throws<InvalidOperationException>(() => s.Send(bytes));
+                });
+
+                Section($"send '{bufferTypeName}' with '{typeof(int).FullName}' 'count' throws '{exceptionTypeName}'",
+                    () =>
+                    {
+                        Assert.Throws<InvalidOperationException>(() => s.Send(bytes, default(int)));
+                    });
+
+                Section($"send '{bufferTypeName}' with '{typeof(long).FullName}' 'count' throws '{exceptionTypeName}'",
+                    () =>
+                    {
+                        Assert.Throws<InvalidOperationException>(() => s.Send(bytes, default(long)));
+                    });
+            });
+        }
+
+        protected virtual void That_default_Sender_Socket_correct<T>()
+            where T : Socket, new()
+        {
+            var exceptionTypeName = typeof(InvalidOperationException).FullName;
+            const string collectionTypeName = "System.Collections.Generic.ICollection<System.Byte>";
+
+            Given_default_socket<T>(s =>
+            {
+                Section($"does not support '{O.RecvFd}'", () =>
+                {
+                    Assert.Throws<NanoException>(() => s.Options.GetInt32(O.RecvFd))
+                        .Matching(ex => ex.ErrorNumber.ToErrorCode() == NotSupported);
+                });
+
+                var m = CreateMessage();
+
+                Section($"receiving '{m.GetType().FullName}' throws '{exceptionTypeName}'", () =>
+                {
+                    Assert.Throws<InvalidOperationException>(() => s.ReceiveMessage());
+                });
+
+                var count = 0;
+
+                Section($"receiving bytes throws '{exceptionTypeName}'", () =>
+                {
+                    Assert.Throws<InvalidOperationException>(() => s.ReceiveBytes(ref count));
+                });
+
+                Section($"try receive '{collectionTypeName}' throws '{exceptionTypeName}'", () =>
+                {
+                    var bytes = new List<byte>();
+                    Assert.Throws<InvalidOperationException>(() => s.TryReceive(bytes, ref count));
+                });
+
+                Section($"try receive '{m.GetType().FullName}' throws '{exceptionTypeName}'", () =>
+                {
+                    Assert.Throws<InvalidOperationException>(() => s.TryReceive(m));
+                });
+            });
         }
     }
 }
