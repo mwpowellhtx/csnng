@@ -90,7 +90,7 @@ namespace Nanomsg2.Sharp.Protocols.Bus
                     m.Body.Append(NinetyNineBits);
                     b2.Send(m);
                     Assert.True(b1.TryReceive(m));
-                    Assert.Equal(NinetyNineBits.Select(x => (byte) x), m.Body.Get());
+                    Assert.Equal(NinetyNineBits.ToBytes(), m.Body.Get());
                     m.Dispose();
 
                     m = CreateMessage();
@@ -118,12 +118,12 @@ namespace Nanomsg2.Sharp.Protocols.Bus
                     b1.Send(m);
 
                     Assert.True(b2.TryReceive(m));
-                    Assert.Equal(OnThe.Select(x => (byte) x), m.Body.Get());
+                    Assert.Equal(OnThe.ToBytes(), m.Body.Get());
 
                     using (var m2 = CreateMessage())
                     {
                         Assert.True(b3.TryReceive(m2));
-                        Assert.Equal(OnThe.Select(x => (byte) x), m2.Body.Get());
+                        Assert.Equal(OnThe.ToBytes(), m2.Body.Get());
                         Assert.False(m2.SameAs(m));
                     }
                 });
