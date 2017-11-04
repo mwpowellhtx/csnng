@@ -100,9 +100,14 @@ namespace Nanomsg2.Sharp
             ConfigureSocket(_sid);
         }
 
-        protected static Exception NotImplemented(string name)
+        protected static NotImplementedException NotImplemented(string name)
         {
             return new NotImplementedException($"{name} is not implemented.");
+        }
+
+        protected virtual InvalidOperationException InvalidOperation(string name)
+        {
+            return new InvalidOperationException($"{name} operation invalid for {GetType().FullName}.");
         }
 
         private void ConfigureSocket(uint sid)
@@ -127,6 +132,7 @@ namespace Nanomsg2.Sharp
 
         public void Close()
         {
+            if (!HasOne) return;
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => __Close(_sid));
             ConfigureSocket(_sid = 0);
         }

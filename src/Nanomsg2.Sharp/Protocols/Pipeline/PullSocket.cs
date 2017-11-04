@@ -23,32 +23,32 @@ namespace Nanomsg2.Sharp.Protocols.Pipeline
 
             public override void Send(Message message, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(Send));
+                throw InvalidOperation(nameof(Send));
             }
 
             public override void Send(IEnumerable<byte> bytes, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(Send));
+                throw InvalidOperation(nameof(Send));
             }
 
             public override void Send(IEnumerable<byte> bytes, int count, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(Send));
+                throw InvalidOperation(nameof(Send));
             }
 
             public override void Send(IEnumerable<byte> bytes, long count, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(Send));
+                throw InvalidOperation(nameof(Send));
             }
 
             public override void Send(string s, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(Send));
+                throw InvalidOperation(nameof(Send));
             }
 
             public override void Send(string s, int length, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(Send));
+                throw InvalidOperation(nameof(Send));
             }
         }
     }

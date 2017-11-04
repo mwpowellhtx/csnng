@@ -23,22 +23,22 @@ namespace Nanomsg2.Sharp.Protocols.Pipeline
 
             public override Message ReceiveMessage(SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(ReceiveMessage));
+                throw InvalidOperation(nameof(ReceiveMessage));
             }
 
             public override IEnumerable<byte> ReceiveBytes(ref int count, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(ReceiveBytes));
+                throw InvalidOperation(nameof(ReceiveBytes));
             }
 
-            public override bool TryReceive(Message message, SocketFlag flags)
+            public override bool TryReceive(Message message, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(TryReceive));
+                throw InvalidOperation(nameof(TryReceive));
             }
 
             public override bool TryReceive(ICollection<byte> buffer, ref int count, SocketFlag flags = None)
             {
-                throw NotImplemented(nameof(TryReceive));
+                throw InvalidOperation(nameof(TryReceive));
             }
         }
     }
