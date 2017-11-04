@@ -85,6 +85,7 @@
     <Compile Include="Messaging\MessageTests.cs" />
     <Compile Include="Protocols\Pipeline\PipelineTests.cs" />
     <Compile Include="Protocols\Pubsub\PubSubTests.cs" />
+    <Compile Include="Protocols\Reqrep\ReqRepTests.cs" />
     <Compile Include="SocketPolling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocols\Bus\BusTests.cs" />
@@ -119,7 +120,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Protocols\Pair\" />
-    <Folder Include="Protocols\Reqrep\" />
     <Folder Include="Protocols\Survey\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
