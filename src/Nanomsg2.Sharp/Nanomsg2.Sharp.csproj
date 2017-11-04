@@ -67,7 +67,6 @@
     <Compile Include="Enums\SocketFlag.cs" />
     <Compile Include="Enums\ErrorCode.cs" />
     <Compile Include="ICanClose.cs" />
-    <Compile Include="IHaveId.cs" />
     <Compile Include="IHaveOne.cs" />
     <Compile Include="Disposable.cs" />
     <Compile Include="IInvoker.cs" />
