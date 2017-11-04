@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Xml;
 
 namespace Nanomsg2.Sharp.Protocols.Pipeline
 {
@@ -33,6 +34,12 @@ namespace Nanomsg2.Sharp.Protocols.Pipeline
             {
                 var bytes = new byte[0];
                 var m = CreateMessage();
+
+                Section($"does not support '{O.SendFd}'", () =>
+                {
+                    Assert.Throws<NanoException>(() => s.Options.GetInt32(O.SendFd))
+                        .Matching(ex => ex.ErrorNumber.ToErrorCode() == NotSupported);
+                });
 
                 Section($"send '{m.GetType().FullName}' throws '{exceptionTypeName}'", () =>
                 {
@@ -71,6 +78,12 @@ namespace Nanomsg2.Sharp.Protocols.Pipeline
 
             Given_default_socket<LatestPushSocket>(s =>
             {
+                Section($"does not support '{O.RecvFd}'", () =>
+                {
+                    Assert.Throws<NanoException>(() => s.Options.GetInt32(O.RecvFd))
+                        .Matching(ex => ex.ErrorNumber.ToErrorCode() == NotSupported);
+                });
+
                 var m = CreateMessage();
 
                 Section($"receiving '{m.GetType().FullName}' throws '{exceptionTypeName}'", () =>
