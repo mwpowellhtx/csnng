@@ -10,7 +10,7 @@ namespace Nanomsg2.Sharp
     {
         [DllImport(NanomsgDll, EntryPoint = "nng_listener_create", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
-        private static extern int __Create(ref uint lid, int sid, [MarshalAs(LPStr)] string addr);
+        private static extern int __Create(ref uint lid, uint sid, [MarshalAs(LPStr)] string addr);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_listener_start", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
@@ -31,7 +31,7 @@ namespace Nanomsg2.Sharp
         [DllImport(NanomsgDll, EntryPoint = "nng_listener_getopt", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
         private static extern int __GetOptStringBuilder(uint lid, [MarshalAs(LPStr)] string name
-            , [MarshalAs(LPArray)] StringBuilder value, ref ulong length);
+            , [MarshalAs(LPStr)] StringBuilder value, ref ulong length);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_listener_getopt_ms", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
@@ -49,32 +49,33 @@ namespace Nanomsg2.Sharp
         [DllImport(NanomsgDll, EntryPoint = "nng_listener_setopt", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
         private static extern int __SetOptStringBuilder(uint lid, [MarshalAs(LPStr)] string name
-            , [MarshalAs(LPArray)] StringBuilder value, ulong length);
+            , [MarshalAs(LPStr)] StringBuilder value, ulong length);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_listener_setopt_ms", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
         private static extern int __SetOptDurationMilliseconds(uint lid, [MarshalAs(LPStr)] string name, int value);
 
-        private uint _lid;
+        internal uint _lid;
 
         protected internal override uint Id => _lid;
 
         public Listener(Socket s, string addr)
         {
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => __Create(ref _lid, s.Id, addr));
-            ConfigureDelegates();
+            ConfigureDelegates(_lid);
         }
 
         public Listener()
         {
         }
 
-        internal void OnListened()
+        internal void OnListened(uint lid)
         {
-            ConfigureDelegates();
+            Close();
+            ConfigureDelegates(_lid = lid);
         }
 
-        private void ConfigureDelegates()
+        private void ConfigureDelegates(uint lid)
         {
             /* Do not be fooled by the names here. They may look the same between Listener and
              * Dialer EndPoints, however, they are anything but. They are proxies for P/Invoke
@@ -82,27 +83,27 @@ namespace Nanomsg2.Sharp
 
             // This is pretty amazing!
             SetDelegates(
-                flags => __Start(_lid, flags)
-                , () => __Close(_lid)
+                flags => __Start(lid, flags)
+                , () => __Close(lid)
             );
 
             var opt = ProtectedOptions;
 
             // Once again, pretty amazing!
             opt.SetGetters(
-                (string name, ref int value) => __GetOptInt32(_lid, name, ref value)
-                , (string name, ref ulong value) => __GetOptUInt64(_lid, name, ref value)
+                (string name, ref int value) => __GetOptInt32(lid, name, ref value)
+                , (string name, ref ulong value) => __GetOptUInt64(lid, name, ref value)
                 , (string name, StringBuilder value, ref ulong length) => __GetOptStringBuilder(
-                    _lid, name, value, ref length)
-                , (string name, ref int value) => __GetOptDurationMilliseconds(_lid, name, ref value)
+                    lid, name, value, ref length)
+                , (string name, ref int value) => __GetOptDurationMilliseconds(lid, name, ref value)
             );
 
             // Ditto amazing!
             opt.SetSetters(
-                (name, value) => __SetOptInt32(_lid, name, value)
-                , (name, sz) => __SetOptUInt64(_lid, name, sz)
-                , (name, value, length) => __SetOptStringBuilder(_lid, name, new StringBuilder(value), length)
-                , (name, value) => __SetOptDurationMilliseconds(_lid, name, value)
+                (name, value) => __SetOptInt32(lid, name, value)
+                , (name, sz) => __SetOptUInt64(lid, name, sz)
+                , (name, value, length) => __SetOptStringBuilder(lid, name, new StringBuilder(value), length)
+                , (name, value) => __SetOptDurationMilliseconds(lid, name, value)
             );
         }
 

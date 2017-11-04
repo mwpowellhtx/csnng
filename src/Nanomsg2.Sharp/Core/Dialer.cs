@@ -10,7 +10,7 @@ namespace Nanomsg2.Sharp
     {
         [DllImport(NanomsgDll, EntryPoint = "nng_dialer_create", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
-        private static extern int __Create(ref uint did, int sid, [MarshalAs(LPStr)] string addr);
+        private static extern int __Create(ref uint did, uint sid, [MarshalAs(LPStr)] string addr);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_dialer_start", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
@@ -31,7 +31,7 @@ namespace Nanomsg2.Sharp
         [DllImport(NanomsgDll, EntryPoint = "nng_dialer_getopt", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
         private static extern int __GetOptStringBuilder(uint did, [MarshalAs(LPStr)] string name
-            , [MarshalAs(LPArray)] StringBuilder value, ref ulong length);
+            , [MarshalAs(LPStr)] StringBuilder value, ref ulong length);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_dialer_getopt_ms", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
@@ -49,7 +49,7 @@ namespace Nanomsg2.Sharp
         [DllImport(NanomsgDll, EntryPoint = "nng_dialer_setopt", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
         private static extern int __SetOptStringBuilder(uint did, [MarshalAs(LPStr)] string name
-            , [MarshalAs(LPArray)] StringBuilder value, ulong length);
+            , [MarshalAs(LPStr)] StringBuilder value, ulong length);
 
         [DllImport(NanomsgDll, EntryPoint = "nng_dialer_setopt_ms", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
@@ -62,45 +62,46 @@ namespace Nanomsg2.Sharp
         public Dialer(Socket s, string addr)
         {
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => __Create(ref _did, s.Id, addr));
-            ConfigureDelegates();
+            ConfigureDelegates(_did);
         }
 
         public Dialer()
         {
         }
 
-        internal void OnDialed()
+        internal void OnDialed(uint did)
         {
-            ConfigureDelegates();
+            Close();
+            ConfigureDelegates(_did = did);
         }
 
-        private void ConfigureDelegates()
+        private void ConfigureDelegates(uint did)
         {
             // See: Listener Configuration comments!
 
             // This is pretty amazing!
             SetDelegates(
-                flags => __Start(_did, flags)
-                , () => __Close(_did)
+                flags => __Start(did, flags)
+                , () => __Close(did)
             );
 
             var opt = ProtectedOptions;
 
             // Once again, pretty amazing!
             opt.SetGetters(
-                (string name, ref int value) => __GetOptInt32(_did, name, ref value)
-                , (string name, ref ulong value) => __GetOptUInt64(_did, name, ref value)
+                (string name, ref int value) => __GetOptInt32(did, name, ref value)
+                , (string name, ref ulong value) => __GetOptUInt64(did, name, ref value)
                 , (string name, StringBuilder value, ref ulong length) => __GetOptStringBuilder(
-                    _did, name, value, ref length)
-                , (string name, ref int value) => __GetOptDurationMilliseconds(_did, name, ref value)
+                    did, name, value, ref length)
+                , (string name, ref int value) => __GetOptDurationMilliseconds(did, name, ref value)
             );
 
             // Ditto amazing!
             opt.SetSetters(
-                (name, value) => __SetOptInt32(_did, name, value)
-                , (name, sz) => __SetOptUInt64(_did, name, sz)
-                , (name, value, length) => __SetOptStringBuilder(_did, name, new StringBuilder(value), length)
-                , (name, value) => __SetOptDurationMilliseconds(_did, name, value)
+                (name, value) => __SetOptInt32(did, name, value)
+                , (name, sz) => __SetOptUInt64(did, name, sz)
+                , (name, value, length) => __SetOptStringBuilder(did, name, new StringBuilder(value), length)
+                , (name, value) => __SetOptDurationMilliseconds(did, name, value)
             );
         }
 
