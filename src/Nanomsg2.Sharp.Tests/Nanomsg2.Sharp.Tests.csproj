@@ -91,6 +91,9 @@
     <Compile Include="Protocols\Pipeline\IPv6PipelineTests.cs" />
     <Compile Include="Protocols\Pipeline\IPv4PipelineTests.cs" />
     <Compile Include="Protocols\Pipeline\PipelineTests.cs" />
+    <Compile Include="Protocols\Pubsub\IPv6PubSubTests.cs" />
+    <Compile Include="Protocols\Pubsub\IPv4PubSubTests.cs" />
+    <Compile Include="Protocols\Pubsub\InterProcessPubSubTests.cs" />
     <Compile Include="Protocols\Pubsub\PubSubTests.cs" />
     <Compile Include="Protocols\Reqrep\ReqRepTests.cs" />
     <Compile Include="Protocols\Survey\SurveyTests.cs" />
