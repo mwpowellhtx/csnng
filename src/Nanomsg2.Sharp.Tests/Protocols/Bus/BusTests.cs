@@ -10,7 +10,7 @@ namespace Nanomsg2.Sharp.Protocols.Bus
     using static ErrorCode;
     using O = Options;
 
-    public class BusTests : ProtocolTestBase<LatestBusSocket>
+    public class BusTests : ProtocolTestBase
     {
         private const string TestAddr = "inproc://test";
         private const string NinetyNineBits = "99bits";
@@ -28,7 +28,12 @@ namespace Nanomsg2.Sharp.Protocols.Bus
             {
                 Given($"three {typeof(LatestBusSocket).FullName} instances", () =>
                 {
-                    _sockets = new[] {CreateOne(), CreateOne(), CreateOne()};
+                    _sockets = new[]
+                    {
+                        CreateOne<LatestBusSocket>(),
+                        CreateOne<LatestBusSocket>(),
+                        CreateOne<LatestBusSocket>()
+                    };
 
                     _sockets[0].Listen(TestAddr);
                     _sockets[1].Dial(TestAddr);
@@ -62,16 +67,14 @@ namespace Nanomsg2.Sharp.Protocols.Bus
                     });
                 });
 
-                _sockets.ToList().ForEach(s => s.Dispose());
+                DisposeAll(_sockets.ToArray<IDisposable>());
             };
         }
 
-        ~BusTests()
+        [Fact]
+        public void That_default_socket_correct()
         {
-            _message?.Dispose();
-            _sockets?[0]?.Dispose();
-            _sockets?[1]?.Dispose();
-            _sockets?[2]?.Dispose();
+            Given_default_socket<LatestBusSocket>();
         }
 
         [Fact]
@@ -128,6 +131,14 @@ namespace Nanomsg2.Sharp.Protocols.Bus
                     }
                 });
             });
+        }
+
+        ~BusTests()
+        {
+            _message?.Dispose();
+            _sockets?[0]?.Dispose();
+            _sockets?[1]?.Dispose();
+            _sockets?[2]?.Dispose();
         }
     }
 }
