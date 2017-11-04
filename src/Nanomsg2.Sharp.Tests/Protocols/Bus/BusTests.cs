@@ -122,7 +122,7 @@ namespace Nanomsg2.Sharp.Protocols.Bus
 
                     using (var m2 = CreateMessage())
                     {
-                        b3.TryReceive(m2);
+                        Assert.True(b3.TryReceive(m2));
                         Assert.Equal(OnThe.Select(x => (byte) x), m2.Body.Get());
                         Assert.False(m2.SameAs(m));
                     }
