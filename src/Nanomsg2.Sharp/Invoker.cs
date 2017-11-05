@@ -10,9 +10,12 @@
 //
 
 using System;
+using System.Linq;
 
 namespace Nanomsg2.Sharp
 {
+    using static ErrorCode;
+
     public class Invoker : Disposable, IInvoker
     {
         protected static InvalidOperationException ThrowInvalidOperation(string operationName)
@@ -61,16 +64,21 @@ namespace Nanomsg2.Sharp
         }
 
         // TODO: TBD: truly, this one may be the better of all the forms: leaving ALL of the impl details to the caller...
-        protected internal virtual void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<int> caller)
+        protected internal virtual void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<int> caller
+            , params ErrorCode[] notOneOf)
         {
             var errnum = caller();
-            if (errnum == 0) return;
+            if (!notOneOf.Any())
+            {
+                notOneOf = new[] {None};
+            }
+            if (notOneOf.Any(x => errnum == (int) x)) return;
             // TODO: TBD: do something with the result...
             // TODO: TBD: introduce an appropriately named exception
             throw new NanoException(errnum);
         }
 
-        protected internal virtual TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<IntPtr, TResult> caller, IntPtr ptr)
+        protected internal TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<IntPtr, TResult> caller, IntPtr ptr)
         {
             return caller(ptr);
         }
