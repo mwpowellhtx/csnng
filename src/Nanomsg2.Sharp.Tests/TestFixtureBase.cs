@@ -12,8 +12,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Nanomsg2.Sharp
 {
@@ -39,6 +41,9 @@ namespace Nanomsg2.Sharp
         {
             lock (Sync) _count++;
             Out = @out;
+
+            Out.WriteLine($"Current process Id: {Process.GetCurrentProcess().Id}");
+            Out.WriteLine($"Managed thread Id: {Thread.CurrentThread.ManagedThreadId}");
         }
 
         ~TestFixtureBase()
@@ -51,6 +56,43 @@ namespace Nanomsg2.Sharp
             //}
             //// TODO: TBD: could it be this was causing a premature shutdown? running multiple tests? doesn't seem like it...
             //Fini();
+        }
+
+        protected static void VerifyDefaultSocket<T>(T s)
+            where T : Socket, new()
+        {
+            Assert.NotNull(s);
+            Assert.True(s.HasOne);
+            Assert.NotNull(s.Options);
+            Assert.True(s.Options.HasOne);
+        }
+
+        protected static T CreateOne<T>()
+            where T : Socket, new()
+        {
+            var s = new T();
+            VerifyDefaultSocket(s);
+            return s;
+        }
+
+        protected static void ConfigureAll(Action<Socket> action, params Socket[] sockets)
+        {
+            Assert.NotNull(action);
+            sockets.ToList().ForEach(action);
+        }
+
+        protected static void VerifyDefaultMessagePipe(MessagePipe p, bool expectingOne)
+        {
+            Assert.NotNull(p);
+            Assert.Equal(expectingOne, p.HasOne);
+            Assert.NotNull(p.Options);
+        }
+
+        protected static MessagePipe CreateMessagePipe(Message m, bool expectingOne = true)
+        {
+            var pipe = new MessagePipe(m);
+            VerifyDefaultMessagePipe(pipe, expectingOne);
+            return pipe;
         }
 
         protected static void VerifyDefaultMessage(Message m)
@@ -125,6 +167,9 @@ namespace Nanomsg2.Sharp
         {
             return $"{addr}:{GetPort(rootType, delta)}";
         }
+
+        public static string BuildAddress<T>(this SocketAddressFamily family)
+            => family.BuildAddress(typeof(T));
 
         public static string BuildAddress(this SocketAddressFamily family, Type rootType)
         {

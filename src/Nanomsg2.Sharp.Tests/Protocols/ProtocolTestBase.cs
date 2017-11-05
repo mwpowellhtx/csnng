@@ -45,15 +45,6 @@ namespace Nanomsg2.Sharp.Protocols
             }
         }
 
-        protected static void VerifyDefaultSocket<T>(T s)
-            where T : Socket, new()
-        {
-            Assert.NotNull(s);
-            Assert.True(s.HasOne);
-            Assert.NotNull(s.Options);
-            Assert.True(s.Options.HasOne);
-        }
-
         protected ProtocolTestBase(ITestOutputHelper @out)
             : base(@out)
         {
@@ -93,26 +84,6 @@ namespace Nanomsg2.Sharp.Protocols
                     s.Close();
                 });
             });
-        }
-
-        protected static T CreateOne<T>()
-            where T : Socket, new()
-        {
-            var s = new T();
-            VerifyDefaultSocket(s);
-            return s;
-        }
-
-        protected static void ConfigureAll(Action<Socket> action, params Socket[] sockets)
-        {
-            Assert.NotNull(action);
-            sockets.ToList().ForEach(action);
-        }
-
-        protected static TimeSpan CreateMilliseconds(double value)
-        {
-            Assert.True(value > 0d || value.Equals(0d));
-            return TimeSpan.FromMilliseconds(value);
         }
 
         protected virtual void That_default_Receiver_Socket_correct<T>()
