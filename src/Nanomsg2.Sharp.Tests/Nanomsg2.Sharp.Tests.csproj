@@ -80,9 +80,11 @@
     <Compile Include="Exceptions.cs" />
     <Compile Include="Imports.cs" />
     <Compile Include="IRequiresUniquePort.cs" />
+    <Compile Include="Messaging\BehaviorDrivenMessageTestBase.cs" />
     <Compile Include="Messaging\BodyPartTests.cs" />
     <Compile Include="Messaging\HeaderPartTests.cs" />
     <Compile Include="Messaging\MessagePartTestBase.cs" />
+    <Compile Include="Messaging\MessagePipeTests.cs" />
     <Compile Include="Messaging\MessageTestBase.cs" />
     <Compile Include="Messaging\MessageTests.cs" />
     <Compile Include="Protocols\Bus\InterProcessBusTests.cs" />
