@@ -62,7 +62,7 @@ namespace Nanomsg2.Sharp
         public Listener(Socket s, string addr)
         {
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => __Create(ref _lid, s.Id, addr));
-            ConfigureDelegates(_lid);
+            Configure(_lid);
         }
 
         public Listener()
@@ -72,10 +72,10 @@ namespace Nanomsg2.Sharp
         internal void OnListened(uint lid)
         {
             Close();
-            ConfigureDelegates(_lid = lid);
+            Configure(_lid = lid);
         }
 
-        private void ConfigureDelegates(uint lid)
+        private void Configure(uint lid)
         {
             /* Do not be fooled by the names here. They may look the same between Listener and
              * Dialer EndPoints, however, they are anything but. They are proxies for P/Invoke

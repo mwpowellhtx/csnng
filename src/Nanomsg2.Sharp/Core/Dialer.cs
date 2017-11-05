@@ -62,7 +62,7 @@ namespace Nanomsg2.Sharp
         public Dialer(Socket s, string addr)
         {
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => __Create(ref _did, s.Id, addr));
-            ConfigureDelegates(_did);
+            Configure(_did);
         }
 
         public Dialer()
@@ -72,10 +72,10 @@ namespace Nanomsg2.Sharp
         internal void OnDialed(uint did)
         {
             Close();
-            ConfigureDelegates(_did = did);
+            Configure(_did = did);
         }
 
-        private void ConfigureDelegates(uint did)
+        private void Configure(uint did)
         {
             // See: Listener Configuration comments!
 
