@@ -79,6 +79,7 @@
     <Compile Include="BehaviorDrivenTestFixtureBase.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Imports.cs" />
+    <Compile Include="IRequiresUniquePort.cs" />
     <Compile Include="Messaging\BodyPartTests.cs" />
     <Compile Include="Messaging\HeaderPartTests.cs" />
     <Compile Include="Messaging\MessagePartTestBase.cs" />

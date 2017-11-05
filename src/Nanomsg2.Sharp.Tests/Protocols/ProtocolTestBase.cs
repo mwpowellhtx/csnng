@@ -28,7 +28,7 @@ namespace Nanomsg2.Sharp.Protocols
         {
             get
             {
-                var addr = VerifyFamily(Family).BuildAddress();
+                var addr = VerifyFamily(Family).BuildAddress(GetType());
                 Report($"Testing using address '{addr}'.");
                 return addr;
             }
