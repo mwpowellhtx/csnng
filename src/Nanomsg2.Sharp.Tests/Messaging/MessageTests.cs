@@ -12,12 +12,18 @@
 namespace Nanomsg2.Sharp.Messaging
 {
     using Xunit;
+    using Xunit.Abstractions;
 
     // TODO: TBD: establish a Message-only set of unit tests
     // TODO: TBD: establish messagepart-base class tests, and header- and body- specific unit tests.
     // TODO: TBD: should be able to factor that much better...
     public class MessageTests : MessageTestBase
     {
+        public MessageTests(ITestOutputHelper @out)
+            : base(@out)
+        {
+        }
+
         [Theory]
         [InlineData(0)]
         [InlineData(0x10)]

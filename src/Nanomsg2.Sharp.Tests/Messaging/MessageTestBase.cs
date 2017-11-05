@@ -15,8 +15,9 @@ using System.Linq;
 namespace Nanomsg2.Sharp.Messaging
 {
     using Xunit;
+    using Xunit.Abstractions;
 
-    public abstract class MessageTestBase
+    public abstract class MessageTestBase : TestFixtureBase
     {
         // ReSharper disable once InconsistentNaming
         protected const ulong sizeof_uint = sizeof(uint);
@@ -33,6 +34,11 @@ namespace Nanomsg2.Sharp.Messaging
         static MessageTestBase()
         {
             sample_data = Enumerable.Range(0, 16).Select(x => (byte) x).ToArray();
+        }
+
+        protected MessageTestBase(ITestOutputHelper @out)
+            : base(@out)
+        {
         }
 
         protected static void VerifyMessage(Action<IMessage> action)

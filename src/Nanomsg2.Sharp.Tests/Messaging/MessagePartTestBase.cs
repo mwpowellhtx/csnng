@@ -16,6 +16,7 @@ using System.Linq;
 namespace Nanomsg2.Sharp.Messaging
 {
     using Xunit;
+    using Xunit.Abstractions;
 
     public abstract class MessagePartTestBase : MessageTestBase
     {
@@ -364,6 +365,11 @@ namespace Nanomsg2.Sharp.Messaging
                 Assert.NotSame(expected, actual);
                 Assert.Equal(expected, actual);
             });
+        }
+
+        protected MessagePartTestBase(ITestOutputHelper @out)
+            : base(@out)
+        {
         }
 
         public abstract void ThatCanAppendUInt32(uint value);

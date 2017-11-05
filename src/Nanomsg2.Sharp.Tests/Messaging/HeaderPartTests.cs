@@ -15,9 +15,15 @@ using System.Collections.Generic;
 namespace Nanomsg2.Sharp.Messaging
 {
     using Xunit;
+    using Xunit.Abstractions;
 
     public class HeaderPartTests : MessagePartTestBase
     {
+        public HeaderPartTests(ITestOutputHelper @out)
+            : base(@out)
+        {
+        }
+
         [Theory]
         [InlineData(1)]
         [InlineData(2)]

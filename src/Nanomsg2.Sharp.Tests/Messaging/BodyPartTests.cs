@@ -14,9 +14,15 @@ using System.Linq;
 namespace Nanomsg2.Sharp.Messaging
 {
     using Xunit;
+    using Xunit.Abstractions;
 
     public class BodyPartTests : MessagePartTestBase
     {
+        public BodyPartTests(ITestOutputHelper @out)
+            : base(@out)
+        {
+        }
+
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
