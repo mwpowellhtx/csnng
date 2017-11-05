@@ -18,8 +18,9 @@ namespace Nanomsg2.Sharp.Messaging
 
     public class Message : Invoker, IMessage, ISameAs<Message>
     {
-        private IntPtr _msgPtr = IntPtr.Zero;
+        private IntPtr _msgPtr;
 
+        internal IntPtr MsgPtr => _msgPtr;
 
         protected internal override void InvokeHavingNoResult<T>(InvocationHavingNoResult<T> caller, T ptr)
         {
@@ -46,13 +47,6 @@ namespace Nanomsg2.Sharp.Messaging
         internal void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller)
         {
             InvokeWithDefaultErrorHandling(caller, _msgPtr);
-        }
-
-        protected internal override TResult InvokeWithResult<T, TResult>(
-            InvocationWithResultDelegate<T, TResult> caller, T ptr)
-        {
-            Allocate(ref _msgPtr);
-            return base.InvokeWithResult(caller, ptr);
         }
 
         internal TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<IntPtr, TResult> caller)
