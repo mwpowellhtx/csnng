@@ -32,16 +32,7 @@ namespace Nanomsg2.Sharp.Messaging
         internal void InvokeHavingNoResult(InvocationHavingNoResult<IntPtr> caller)
         {
             // We override these because we want to perform special handling of the underlying Message Ptr.
-            Allocate(ref _msgPtr);
             InvokeHavingNoResult(caller, _msgPtr);
-        }
-
-        protected internal override void InvokeWithDefaultErrorHandling<T>(InvocationWithResultDelegate<T, int> caller,
-            T ptr)
-        {
-            Allocate(ref _msgPtr);
-            var result = caller(ptr);
-            // TODO: TBD: do something with the result...
         }
 
         internal void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller)
@@ -51,6 +42,7 @@ namespace Nanomsg2.Sharp.Messaging
 
         internal TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<IntPtr, TResult> caller)
         {
+            Allocate(ref _msgPtr);
             return InvokeWithResult(caller, _msgPtr);
         }
 
@@ -143,12 +135,12 @@ namespace Nanomsg2.Sharp.Messaging
         // TODO: TBD: separate the Disposal out into a base class...
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
-
             if (disposing && !IsDisposed)
             {
                 Free();
             }
+
+            base.Dispose(disposing);
         }
     }
 }
