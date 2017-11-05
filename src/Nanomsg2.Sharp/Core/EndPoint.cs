@@ -24,7 +24,7 @@ namespace Nanomsg2.Sharp
 
         protected OptionReaderWriter ProtectedOptions { get; }
 
-        public IOptionReaderWriter Options => ProtectedOptions;
+        public IOptionReaderWriter Options { get; }
 
         protected internal abstract uint Id { get; }
 
@@ -32,7 +32,7 @@ namespace Nanomsg2.Sharp
 
         protected EndPoint()
         {
-            ProtectedOptions = new OptionReaderWriter();
+            Options = ProtectedOptions = new OptionReaderWriter();
         }
 
         public virtual void Start(SocketFlag flags = None)
