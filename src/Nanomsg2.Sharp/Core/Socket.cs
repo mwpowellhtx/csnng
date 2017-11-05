@@ -89,15 +89,15 @@ namespace Nanomsg2.Sharp
 
         private OptionReaderWriter PrivateOptions { get; }
 
-        public IOptionReaderWriter Options => PrivateOptions;
+        public IOptionReaderWriter Options { get; }
 
         protected delegate int OpenDelegate(ref uint sid);
 
         protected Socket(OpenDelegate open)
         {
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => open(ref _sid));
-            PrivateOptions = new OptionReaderWriter();
-            ConfigureSocket(_sid);
+            Options = PrivateOptions = new OptionReaderWriter();
+            Configure(_sid);
         }
 
         protected static NotImplementedException NotImplemented(string name)
@@ -110,7 +110,7 @@ namespace Nanomsg2.Sharp
             return new InvalidOperationException($"{name} operation invalid for {GetType().FullName}.");
         }
 
-        private void ConfigureSocket(uint sid)
+        private void Configure(uint sid)
         {
             var opt = PrivateOptions;
 
@@ -134,7 +134,7 @@ namespace Nanomsg2.Sharp
         {
             if (!HasOne) return;
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => __Close(_sid));
-            ConfigureSocket(_sid = 0);
+            Configure(_sid = 0);
         }
 
         public void Listen(string addr, SocketFlag flags = None)
