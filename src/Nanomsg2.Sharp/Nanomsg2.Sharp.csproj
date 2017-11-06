@@ -46,8 +46,11 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Collections\Generic\FixedSizeCollection.cs" />
+    <Compile Include="Core\Async\BasicAsyncService.cs" />
+    <Compile Include="Core\Async\IAsyncService.cs" />
     <Compile Include="Core\Dialer.cs" />
     <Compile Include="Core\EndPoint.cs" />
+    <Compile Include="Enums\Duration.cs" />
     <Compile Include="Core\ICanDial.cs" />
     <Compile Include="Core\ICanListen.cs" />
     <Compile Include="Core\IDialer.cs" />
