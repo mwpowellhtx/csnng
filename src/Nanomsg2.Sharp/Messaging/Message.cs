@@ -22,35 +22,25 @@ namespace Nanomsg2.Sharp.Messaging
 
         internal IntPtr MsgPtr => _msgPtr;
 
-        protected internal override void InvokeHavingNoResult<T>(InvocationHavingNoResult<T> caller, T ptr)
-        {
-            // We override these because we want to perform special handling of the underlying Message Ptr.
-            Allocate(ref _msgPtr);
-            base.InvokeHavingNoResult(caller, ptr);
-        }
-
         internal void InvokeHavingNoResult(InvocationHavingNoResult<IntPtr> caller)
         {
             // We override these because we want to perform special handling of the underlying Message Ptr.
+            Allocate(ref _msgPtr);
             InvokeHavingNoResult(caller, _msgPtr);
-        }
-
-        internal void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller)
-        {
-            InvokeWithDefaultErrorHandling(caller, _msgPtr);
         }
 
         internal TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<IntPtr, TResult> caller)
         {
+            // Ditto Message ptr alignment.
             Allocate(ref _msgPtr);
             return InvokeWithResult(caller, _msgPtr);
         }
 
-        protected internal override void InvokeWithDefaultErrorHandling(
-            InvocationWithResultDelegate<IntPtr, int> caller, IntPtr ptr)
+        internal void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller)
         {
+            // Make sure that the Message we allocate is the same one we pass for Invocation.
             Allocate(ref _msgPtr);
-            base.InvokeWithDefaultErrorHandling(caller, ptr);
+            base.InvokeWithDefaultErrorHandling(caller, _msgPtr);
         }
 
         [DllImport(NanomsgDll, EntryPoint = "nng_msg_alloc", CallingConvention = Cdecl)]
@@ -68,17 +58,17 @@ namespace Nanomsg2.Sharp.Messaging
         {
         }
 
-        public Message(IntPtr msgPtr)
-            : this(0)
-        {
-            RetainPtr(msgPtr);
-        }
-
         public Message(ulong sz)
         {
             Allocate(ref _msgPtr, sz);
             Header = new HeaderPart(this);
             Body = new BodyPart(this);
+        }
+
+        protected internal Message(IntPtr msgPtr)
+            : this(0)
+        {
+            RetainPtr(msgPtr);
         }
 
         ~Message()
