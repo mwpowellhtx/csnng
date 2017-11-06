@@ -4,7 +4,7 @@ namespace Nanomsg2.Sharp
 {
     using Messaging;
 
-    public interface IAsyncService : IHaveOne, ICanClose, IDisposable
+    public interface IAsyncService : IHaveOne, ICanClose, IDisposable, IHaveOptions<IAsyncOptionWriter>
     {
         void Start();
 
@@ -26,21 +26,8 @@ namespace Nanomsg2.Sharp
 
         void VerifyResult();
 
-        void SetTimeoutDurationMilliseconds(int value);
-
-        void SetTimeoutDuration(TimeSpan value);
-
         void Retain(Message message);
 
         void Cede(Message message);
-    }
-
-    public static class AsyncServiceExtensionMethods
-    {
-        public static void SetTimeout<T>(this T svc, Duration value)
-            where T : class, IAsyncService
-        {
-            svc.SetTimeoutDurationMilliseconds(value.ToInt());
-        }
     }
 }

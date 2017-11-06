@@ -43,8 +43,6 @@ namespace Nanomsg2.Sharp
         [DllImport(NanomsgDll, EntryPoint = "nng_aio_set_msg", CallingConvention = Cdecl)]
         private static extern void __SetMessagePtr(IntPtr aioPtr, IntPtr msgPtr);
 
-        private delegate void SetTimeoutDurationMillisecondsDelegate(int value);
-
         private delegate void SetMessagePtrDelegate(IntPtr msgPtr);
 
         private InvocationHavingNoResult _free;
@@ -57,11 +55,13 @@ namespace Nanomsg2.Sharp
 
         private InvocationWithResultDelegate<int> _getResult;
 
-        private SetTimeoutDurationMillisecondsDelegate _setTimeoutDurationMilliseconds;
-
         private InvocationWithResultDelegate<IntPtr> _getMessagePtr;
 
         private SetMessagePtrDelegate _setMessagePtr;
+
+        private AsyncOptionWriter PrivateOptions { get; }
+
+        public IAsyncOptionWriter Options { get; }
 
         public BasicAsyncService()
             : this(() => { })
@@ -70,6 +70,7 @@ namespace Nanomsg2.Sharp
 
         public BasicAsyncService(BasicAsyncCallback callback)
         {
+            Options = PrivateOptions = new AsyncOptionWriter(this);
             Start(callback);
         }
 
@@ -102,13 +103,16 @@ namespace Nanomsg2.Sharp
 
         private void Configure(IntPtr aioPtr)
         {
+            PrivateOptions.SetSetters(
+                x => __SetTimeoutDurationMilliseconds(_aioPtr, x)
+            );
+
             // TODO: TBD: perhaps we can run direct through the C calling conventions.
             _free = () => __Free(aioPtr);
             _wait = () => __Wait(aioPtr);
             _stop = () => __Stop(aioPtr);
             _cancel = () => __Cancel(aioPtr);
             _getResult = () => __GetResult(aioPtr);
-            _setTimeoutDurationMilliseconds = x => __SetTimeoutDurationMilliseconds(_aioPtr, x);
             _getMessagePtr = () => __GetMessagePtr(aioPtr);
             _setMessagePtr = msgPtr => __SetMessagePtr(aioPtr, msgPtr);
         }
@@ -185,16 +189,6 @@ namespace Nanomsg2.Sharp
             }
         }
 
-        public virtual void SetTimeoutDurationMilliseconds(int value)
-        {
-            InvokeHavingNoResult(() => _setTimeoutDurationMilliseconds(value));
-        }
-
-        public virtual void SetTimeoutDuration(TimeSpan value)
-        {
-            SetTimeoutDurationMilliseconds((int) value.TotalMilliseconds);
-        }
-
         public virtual void Retain(Message message)
         {
             InvokeHavingNoResult(() => _setMessagePtr(message.CedePtr()));
@@ -211,6 +205,8 @@ namespace Nanomsg2.Sharp
             if (disposing && !IsDisposed)
             {
                 Close(true);
+
+                PrivateOptions.Dispose();
             }
 
             base.Dispose(disposing);
