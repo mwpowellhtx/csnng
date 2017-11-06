@@ -98,8 +98,8 @@ namespace Nanomsg2.Sharp.Async
                             Assert.True(txSvc.HasOne);
                             Assert.True(rxSvc.HasOne);
 
-                            txSvc.SetTimeoutDuration(FromMilliseconds(timeout));
-                            rxSvc.SetTimeoutDuration(FromMilliseconds(timeout));
+                            txSvc.Options.SetTimeoutDuration(FromMilliseconds(timeout));
+                            rxSvc.Options.SetTimeoutDuration(FromMilliseconds(timeout));
 
                             Assert.Equal(0, txSurplus);
                             Assert.Equal(1, rxDeficit);
@@ -180,7 +180,7 @@ namespace Nanomsg2.Sharp.Async
             {
                 Section("Service timeout works", () =>
                 {
-                    svc.SetTimeoutDuration(FromMilliseconds(NominalTimeout));
+                    svc.Options.SetTimeoutDuration(FromMilliseconds(NominalTimeout));
                     s.ReceiveAsync(svc);
                     WaitForDoneAndSuccess(svc, TimedOut);
                 });
@@ -208,7 +208,7 @@ namespace Nanomsg2.Sharp.Async
             {
                 Section("Zero timeout works", () =>
                 {
-                    svc.SetTimeout(Duration.Zero);
+                    svc.Options.SetTimeout(Duration.Zero);
                     s.ReceiveAsync(svc);
                     WaitForDoneAndSuccess(svc, TimedOut);
                 });
@@ -222,7 +222,7 @@ namespace Nanomsg2.Sharp.Async
             {
                 Section("Cancellation works", () =>
                 {
-                    svc.SetTimeout(Duration.Infinite);
+                    svc.Options.SetTimeout(Duration.Infinite);
                     s.ReceiveAsync(svc);
                     svc.Cancel();
                     WaitForDoneAndSuccess(svc, Canceled);
