@@ -72,6 +72,9 @@ namespace Nanomsg2.Sharp
         [return: MarshalAs(I4)]
         private static extern int __SendMessage(uint sid, IntPtr msgPtr, int flags);
 
+        [DllImport(NanomsgDll, EntryPoint = "nng_send_aio", CallingConvention = Cdecl)]
+        private static extern void __SendAsync(uint sid, IntPtr aioPtr);
+
         [DllImport(NanomsgDll, EntryPoint = "nng_recv", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
         private static extern int __Receive(uint sid, [MarshalAs(LPArray)] byte[] buffer, ref ulong sz, int flags);
@@ -79,6 +82,9 @@ namespace Nanomsg2.Sharp
         [DllImport(NanomsgDll, EntryPoint = "nng_recvmsg", CallingConvention = Cdecl)]
         [return: MarshalAs(I4)]
         private static extern int __ReceiveMessage(uint sid, out IntPtr msgPtr, int flags);
+
+        [DllImport(NanomsgDll, EntryPoint = "nng_recv_aio", CallingConvention = Cdecl)]
+        private static extern void __ReceiveAsync(uint sid, IntPtr aioPtr);
 
         // TODO: TBD: there is really no pretty way to handle this from a C# language perspective but to expose the Id for internal use
         private uint _sid;
@@ -195,6 +201,12 @@ namespace Nanomsg2.Sharp
                 , new StringBuilder(s), (ulong) length, (int) flags));
         }
 
+        public virtual void SendAsync(BasicAsyncService svc)
+        {
+            // Result is deferred on the Service itself, so it should be safe to just invoke the op.
+            DefaultInvoker.InvokeHavingNoResult(() => __SendAsync(_sid, svc.AioPtr));
+        }
+
         public virtual Message ReceiveMessage(SocketFlag flags = None)
         {
             var message = new Message();
@@ -222,6 +234,12 @@ namespace Nanomsg2.Sharp
             DefaultInvoker.InvokeWithDefaultErrorHandling(() => __Receive(_sid, local, ref sz, (int)flags));
             buffer.AddRange(local.Take(count = (int) sz));
             return sz > 0;
+        }
+
+        public virtual void ReceiveAsync(BasicAsyncService svc)
+        {
+            // Result is deferred on the Service itself, so it should be safe to just invoke the op.
+            DefaultInvoker.InvokeHavingNoResult(() => __ReceiveAsync(_sid, svc.AioPtr));
         }
 
         protected override void Dispose(bool disposing)

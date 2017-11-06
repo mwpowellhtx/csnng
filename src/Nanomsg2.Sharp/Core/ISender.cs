@@ -18,5 +18,9 @@ namespace Nanomsg2.Sharp
         void Send(string s, SocketFlag flags = None);
 
         void Send(string s, int length, SocketFlag flags = None);
+
+        // TODO: TBD: for now, using a direct injection of the service;
+        // TODO: TBD: think about how that looks for true async functionality.
+        void SendAsync(BasicAsyncService svc);
     }
 }
