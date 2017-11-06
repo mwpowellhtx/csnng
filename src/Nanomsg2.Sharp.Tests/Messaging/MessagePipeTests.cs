@@ -65,6 +65,9 @@ namespace Nanomsg2.Sharp.Messaging
 
         private delegate void MessagePipeCallback(Socket s, Message m, MessagePipe p);
 
+        /// <summary>
+        /// 3
+        /// </summary>
         private const int ExpectedRecvBuf = 3;
 
         private void Prepare_pipe_given_sockets_and_messages(MessagePipeCallback callback)
