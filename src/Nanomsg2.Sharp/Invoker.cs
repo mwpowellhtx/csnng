@@ -31,20 +31,28 @@ namespace Nanomsg2.Sharp
         }
 
         // TODO: TBD: probably belongs in another class... along the same lines as "invocation" in C++
+        protected internal delegate void InvocationHavingNoResult();
+
         protected internal delegate void InvocationHavingNoResult<in T>(T ptr);
 
         protected internal delegate TResult InvocationWithResultDelegate<out TResult>();
 
         protected internal delegate TResult InvocationWithResultDelegate<in T, out TResult>(T ptr);
 
+        protected internal virtual void InvokeHavingNoResult(InvocationHavingNoResult caller)
+        {
+            caller();
+        }
+
         protected internal virtual void InvokeHavingNoResult<T>(InvocationHavingNoResult<T> caller, T ptr)
         {
             caller(ptr);
         }
 
-        protected internal virtual void InvokeWithDefaultErrorHandling<T>(InvocationWithResultDelegate<T, int> caller, T ptr)
+        protected internal virtual TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<TResult> caller)
         {
-            var result = caller(ptr);
+            var result = caller();
+            return result;
         }
 
         protected internal virtual TResult InvokeWithResult<T, TResult>(InvocationWithResultDelegate<T, TResult> caller, T ptr)
@@ -53,17 +61,6 @@ namespace Nanomsg2.Sharp
             return result;
         }
 
-        // TODO: TBD: will need to consider the "throw if one of" scenario...
-        protected internal virtual void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller, IntPtr ptr)
-        {
-            var errnum = caller(ptr);
-            if (errnum == 0) return;
-            // TODO: TBD: do something with the result...
-            // TODO: TBD: introduce an appropriately named exception
-            throw new NanoException(errnum);
-        }
-
-        // TODO: TBD: truly, this one may be the better of all the forms: leaving ALL of the impl details to the caller...
         protected internal virtual void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<int> caller
             , params ErrorCode[] notOneOf)
         {
@@ -76,6 +73,19 @@ namespace Nanomsg2.Sharp
             // TODO: TBD: do something with the result...
             // TODO: TBD: introduce an appropriately named exception
             throw new NanoException(errnum);
+        }
+
+        // TODO: TBD: will need to consider the "throw if one of" scenario...
+        protected internal virtual void InvokeWithDefaultErrorHandling<T>(InvocationWithResultDelegate<T, int> caller
+            , T ptr, params ErrorCode[] notOneOf)
+        {
+            InvokeWithDefaultErrorHandling(() => caller(ptr), notOneOf);
+        }
+
+        protected internal virtual void InvokeWithDefaultErrorHandling(InvocationWithResultDelegate<IntPtr, int> caller
+            , IntPtr ptr, params ErrorCode[] notOneOf)
+        {
+            InvokeWithDefaultErrorHandling<IntPtr>(caller, ptr, notOneOf);
         }
 
         protected internal TResult InvokeWithResult<TResult>(InvocationWithResultDelegate<IntPtr, TResult> caller, IntPtr ptr)
