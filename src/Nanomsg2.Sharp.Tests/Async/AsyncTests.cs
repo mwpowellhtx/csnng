@@ -40,6 +40,30 @@ namespace Nanomsg2.Sharp.Async
         {
         }
 
+        private static void VerifyAsyncService<T>(T svc)
+            where T : BasicAsyncService
+        {
+            Assert.NotNull(svc);
+            Assert.True(svc.HasOne);
+            Assert.NotNull(svc.Options);
+            Assert.True(svc.Options.HasOne);
+        }
+
+        protected static T CreateAsyncService<T>()
+            where T : BasicAsyncService, new()
+        {
+            var svc = new T();
+            VerifyAsyncService(svc);
+            return svc;
+        }
+
+        protected static BasicAsyncService CreateAsyncService(BasicAsyncCallback callback)
+        {
+            var svc = new BasicAsyncService(callback);
+            VerifyAsyncService(svc);
+            return svc;
+        }
+
         private delegate void ConnectedSocketsCallback(Socket s1, Socket s2);
 
         private void Given_two_connected_sockets(ConnectedSocketsCallback callback)
@@ -92,8 +116,8 @@ namespace Nanomsg2.Sharp.Async
 
                             // TODO: TBD: could have a base test class with CreateAsyncService...
                             // This is the kind of economy we want. Increased surplus, decreased deficit.
-                            txSvc = new BasicAsyncService(() => txSurplus++);
-                            rxSvc = new BasicAsyncService(() => --rxDeficit);
+                            txSvc = CreateAsyncService(() => txSurplus++);
+                            rxSvc = CreateAsyncService(() => --rxDeficit);
 
                             Assert.True(txSvc.HasOne);
                             Assert.True(rxSvc.HasOne);
@@ -151,7 +175,7 @@ namespace Nanomsg2.Sharp.Async
                     s = CreateOne<LatestPairSocket>();
 
                     // TODO: TBD: ditto CreateAsyncService...
-                    svc = new BasicAsyncServiceFixture();
+                    svc = CreateAsyncService<BasicAsyncServiceFixture>();
                     svc.Start(() => ++svc.Done);
 
                     Assert.Equal(0, svc.Done);
