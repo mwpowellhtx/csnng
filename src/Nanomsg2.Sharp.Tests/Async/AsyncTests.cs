@@ -79,41 +79,54 @@ namespace Nanomsg2.Sharp.Async
                 {
                     int txSurplus = 0, rxDeficit = 1;
 
+                    // Using the same Message throughout the body of this unit test.
                     using (var m = CreateMessage())
                     {
-                        m.Body.Append(Hello);
+                        // Make sure that we are disposing the Services afterward.
+                        BasicAsyncService txSvc = null;
+                        BasicAsyncService rxSvc = null;
 
-                        // TODO: TBD: could have a base test class with CreateAsyncService...
-                        // This is the kind of economy we want. Increased surplus, decreased deficit.
-                        var txSvc = new BasicAsyncService(() => txSurplus++);
-                        var rxSvc = new BasicAsyncService(() => --rxDeficit);
+                        try
+                        {
+                            m.Body.Append(Hello);
 
-                        Assert.True(txSvc.HasOne);
-                        Assert.True(rxSvc.HasOne);
+                            // TODO: TBD: could have a base test class with CreateAsyncService...
+                            // This is the kind of economy we want. Increased surplus, decreased deficit.
+                            txSvc = new BasicAsyncService(() => txSurplus++);
+                            rxSvc = new BasicAsyncService(() => --rxDeficit);
 
-                        txSvc.SetTimeoutDuration(FromMilliseconds(timeout));
-                        rxSvc.SetTimeoutDuration(FromMilliseconds(timeout));
+                            Assert.True(txSvc.HasOne);
+                            Assert.True(rxSvc.HasOne);
 
-                        Assert.Equal(0, txSurplus);
-                        Assert.Equal(1, rxDeficit);
+                            txSvc.SetTimeoutDuration(FromMilliseconds(timeout));
+                            rxSvc.SetTimeoutDuration(FromMilliseconds(timeout));
 
-                        txSvc.Retain(m);
-                        Assert.False(m.HasOne);
+                            Assert.Equal(0, txSurplus);
+                            Assert.Equal(1, rxDeficit);
 
-                        s2.ReceiveAsync(rxSvc);
-                        s1.SendAsync(txSvc);
+                            txSvc.Retain(m);
+                            Assert.False(m.HasOne);
 
-                        rxSvc.Wait();
+                            s2.ReceiveAsync(rxSvc);
+                            s1.SendAsync(txSvc);
 
-                        Assert.True(txSvc.Success);
-                        Assert.True(rxSvc.Success);
+                            rxSvc.Wait();
 
-                        rxSvc.Cede(m);
-                        Assert.True(m.HasOne);
+                            Assert.True(txSvc.Success);
+                            Assert.True(rxSvc.Success);
 
-                        Assert.Equal(Hello.ToBytes(), m.Body.Get());
+                            rxSvc.Cede(m);
+                            Assert.True(m.HasOne);
+
+                            Assert.Equal(Hello.ToBytes(), m.Body.Get());
+                        }
+                        finally
+                        {
+                            DisposeAll(txSvc, rxSvc);
+                        }
                     }
 
+                    // We like this kind of deficit spending.
                     Assert.Equal(1, txSurplus);
                     Assert.Equal(0, rxDeficit);
                 });
