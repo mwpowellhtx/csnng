@@ -129,6 +129,18 @@ namespace Nanomsg2.Sharp
             InvokeHavingNoResult(_wait);
         }
 
+        public virtual void TimedWait(int timeoutMilliseconds)
+        {
+            Options.SetTimeoutDurationMilliseconds(timeoutMilliseconds);
+            Wait();
+        }
+
+        public virtual void TimedWait(TimeSpan timeout)
+        {
+            Options.SetTimeoutDuration(timeout);
+            Wait();
+        }
+
         public virtual void Close()
         {
             Close(false);

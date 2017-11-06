@@ -12,6 +12,10 @@ namespace Nanomsg2.Sharp
 
         void Wait();
 
+        void TimedWait(int timeoutMilliseconds);
+
+        void TimedWait(TimeSpan timeout);
+
         void Stop();
 
         void Cancel();
